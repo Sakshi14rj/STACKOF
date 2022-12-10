@@ -4,13 +4,16 @@ import React from 'react'
 import {Routes,Route} from "react-router-dom";
 import Auth from './pages/Auth/Auth';
 import Home from './pages/Home/Home'
+import Questions from './pages/Questions/Questions';
+
+
 const Routing = () => {
   return (
     <Routes>
-      <Route exact path='/' element={ <Home/>} />
-      <Route path='/auth' element={ <Auth/> } />
-      <Route path='/' />
-    </Routes>
+    <Route path='/' element={<Home />}/>
+    <Route path='/Auth' element={<Auth />}/>
+    <Route path='/Questions' element={<Questions />}/>
+</Routes>
   )
 }
 
