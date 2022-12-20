@@ -1,15 +1,37 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import { Link } from 'react-router-dom'
-// import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import logo from '../../assets/logo.png'
 import Avatar from '../../components/Avatar/Avatar'
-// import Button from '../../components/Button/Button'
 import search from '../../assets/search-solid.svg'
 import './Navbar.css'
 import { Button } from '@mui/material';
+import {useSelector,useDispatch} from 'react-redux'
+import setCurrentUser from '../../actions/currentUser'
+import {useNavigate} from 'react-router-dom'
+import decode from 'jwt-decode'
+
 const Navbar = () => {
 
-    var user = null
+    var User = useSelector((state)=>(state.currentUserReducer))
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+        dispatch({ type: 'LOGOUT' })
+        navigate('/')
+        dispatch(setCurrentUser(null))
+    }
+
+    useEffect(() => {
+        const token = User?.token
+        if (token) {
+            const decodeToken = decode(token)
+            if (decodeToken.exp * 1000 < new Date().getTime()) {
+                handleLogout()
+            }
+        }
+        dispatch(setCurrentUser(JSON.parse(localStorage.getItem('Profile'))))
+    }, [dispatch])
 
     return (
         <nav className='main-nav'>
@@ -30,7 +52,7 @@ const Navbar = () => {
                     <img src={ search } alt="search" width="18" className='search-icon'/>
                 </form> 
 
-                {user === null ?
+                {User === null ?
                     <Link to='/Auth' className='nav-item nav-links'>Log in</Link>
                         :
                     <>
@@ -41,10 +63,10 @@ const Navbar = () => {
                             color='white'
                         >
                             <Link to='/User' style={{color:'white',textDecoration:'none'}}>
-                                M
+                                {User.result.name.charAt(0).toUpperCase()}
                             </Link>
                         </Avatar>
-                        <Button>Log out</Button>
+                        <Button onClick={handleLogout}>Log out</Button>
                     </> 
                     }
             </div>  
