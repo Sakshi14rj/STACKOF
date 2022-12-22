@@ -1,8 +1,8 @@
 import React from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import './HomeMainbar.css'
 import QuestionList from './QuestionList'
-import {useSelector,useDispatch} from 'react-redux'
+import {useSelector} from 'react-redux'
 
 const HomeMainbar = () => {
   //  var questionsList = [{ 

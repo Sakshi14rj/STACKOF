@@ -9,13 +9,13 @@ import { fetchAllUsers } from './actions/users';
 function App() {
 
   const dispatch = useDispatch()
-
+  
+  console.log(window.location.pathname())
   useEffect(() => {
     dispatch(fetchAllQuestions())
     dispatch(fetchAllUsers())
   }, [dispatch])
   
-
   return (
     <div className="App">
       <Router >
