@@ -15,7 +15,7 @@ const DisplayAnswer = ({question}) => {
     // const navigate = useNavigate()
     const dispatch = useDispatch()
     const location = useLocation()
-    const url = 'http://localhost:3000'
+    const url = 'stack-overflow-clone-namasivaayam-l.netlify.app'
     const handleShare = () => {
         copy(url + location.pathname)
         alert('URL Copied to clipboard'+url+location.pathname)
