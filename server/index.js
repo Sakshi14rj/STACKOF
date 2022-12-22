@@ -1,7 +1,7 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import cors from 'cors'
-import userRoutes from './routes/users.js'
+import userRoutes from './routes/users'
 import questionRoutes from './routes/Questions'
 import answerRoutes from './routes/Answers'
 

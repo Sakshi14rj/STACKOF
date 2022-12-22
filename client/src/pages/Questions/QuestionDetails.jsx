@@ -14,6 +14,8 @@ import DisplayAnswer from './DisplayAnswer'
 
 const QuestionDetails = () => {
     const User = useSelector((state) => (state.currentUserReducer))
+    const users = useSelector((state) => state.usersReducer)
+    console.log(users);
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const location = useLocation()
@@ -105,7 +107,7 @@ const QuestionDetails = () => {
         dispatch(voteQuestion(id,'downVote',User?.result?._id))
         
     }
-  const questionsList = useSelector(state => state.questionReducer)
+    const questionsList = useSelector(state => state.questionReducer)
   return (
     <div className='question-details-page'>
         {
@@ -144,7 +146,7 @@ const QuestionDetails = () => {
                                                     </div>
                                                     <div>
                                                         <p>asked {moment(question.askedOn).fromNow()}</p>
-                                                        <Link to={`/User/${question.userId}`} className='user-link' style={{ color: '#00086d8' }}>
+                                                        <Link to={`/Users/${question.userId}`} className='user-link' style={{ color: '#00086d8' }}>
                                                             <Avatar backgroundColor="orange" px="8px" py="5px">{ question.userPosted.charAt(0).toUpperCase()}</Avatar>
                                                             <div>
                                                                 {question.userPosted}
