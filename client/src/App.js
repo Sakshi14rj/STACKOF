@@ -10,7 +10,7 @@ function App() {
 
   const dispatch = useDispatch()
   
-  console.log(window.location.pathname())
+  // console.log(window.location.pathname())
   useEffect(() => {
     dispatch(fetchAllQuestions())
     dispatch(fetchAllUsers())
