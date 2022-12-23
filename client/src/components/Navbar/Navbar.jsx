@@ -63,7 +63,7 @@ const Navbar = () => {
                             borderRadius='50%'
                             color='white'
                         >
-                            <Link to='/User' style={{color:'white',textDecoration:'none'}}>
+                            <Link to={`/Users/${User.result._id}`} style={{color:'white',textDecoration:'none'}}>
                                 {User.result.name.charAt(0).toUpperCase()}
                             </Link>
                         </Avatar>

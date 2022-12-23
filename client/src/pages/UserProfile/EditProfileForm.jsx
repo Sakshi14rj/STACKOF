@@ -34,7 +34,7 @@ const EditProfileForm = ({ currentUser, setSwitch }) => {
             <input type="text" name="" id="tags" value={tags} onChange={(e)=>setTags(e.target.value)} />
         </label><br />
         <input type="submit" value="Save Profile" className='user-submit-btn'/><br />
-        <button type='button' className='user-cancel-btn' onClick={ ()=> setSwitch(false)}> Cancel </button>
+        <button type='button' className='user-cancel-btn' onClick={ ()=> setSwitch(false) }> Cancel </button>
         </form>
     </div>
   )      
