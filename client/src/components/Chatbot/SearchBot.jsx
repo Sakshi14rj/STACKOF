@@ -25,7 +25,9 @@ const SearchStackOverflow = props => {
             overflowWrap: 'break-word',  
             wordWrap: 'break-word', 
             wordBreak: 'break-word',
-            }}>
+    }}>
+      <h3>{ loading && "Searching....."}</h3>
+      <h3 style={{color:'#7a39e0', fontWeight:'1900'}}>{ !loading && "Here are the top 2 Answers from Stack Overflow"}</h3>
       {
           answers.map(ans => (
             <>
