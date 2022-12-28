@@ -6,6 +6,8 @@ import {useEffect} from 'react'
 import { fetchAllQuestions } from './actions/question';
 import {useDispatch} from 'react-redux'
 import { fetchAllUsers } from './actions/users';
+import Chatbot from './components/Chatbot/Chatbot';
+
 function App() {
 
   const dispatch = useDispatch()
@@ -22,6 +24,7 @@ function App() {
         <Navbar />
         <Routing />
       </Router >
+        <Chatbot/>
     </div>
   );
 }

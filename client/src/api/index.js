@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const API = axios.create({ baseURL: 'https://stack-overflow-clone-namsivaayam-l.onrender.com' })
+// const API = axios.create({ baseURL: 'https://stack-overflow-clone-namsivaayam-l.onrender.com' })
+const API = axios.create({ baseURL: 'http://localhost:5000' })
 
 API.interceptors.request.use((req) => {
     if (localStorage.getItem('Profile')) {
@@ -21,4 +22,7 @@ export const postAnswer = (id, noOfAnswers, answerBody, userAnswered, userId) =>
 export const deleteAnswer = (id,answerId,noOfAnswers) => API.patch(`/answer/delete/:${id}`,{answerId,noOfAnswers})
 
 export const fetchAllUsers = () => API.get('/user/getAllUsers')
-export const updateProfile = (id,updateData) => API.patch(`/user/update/${id}`,updateData)
+export const updateProfile = (id, updateData) => API.patch(`/user/update/${id}`, updateData)
+export const generateOTP = (email) => API.post('/verify/email',{email})
+export const verifyOTP = (email,recvOTP) => API.post('/verify/otp',{email,recvOTP})
+export const searchStackOverflow = (question) => API.post('/search/stackoverflow',{question})

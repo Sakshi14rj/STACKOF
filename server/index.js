@@ -5,11 +5,14 @@ import userRoutes from './routes/users'
 import questionRoutes from './routes/Questions'
 import answerRoutes from './routes/Answers'
 import dotenv from 'dotenv'
+import verification from './routes/verification'
+import searchStackOverflow from './routes/searchStackOverflow'
 const app = express()
 dotenv.config()
 app.use(express.json({limit:'30mb',extended:true}))
 app.use(express.urlencoded({ limit: '30mb', extended: true }))
 app.use(cors())
+mongoose.set('strictQuery', true)
 app.get('/', (req, res) => {
     res.send("This is a stack overflow clone api")
     console.log('server fired up at port', PORT);
@@ -18,7 +21,8 @@ app.get('/', (req, res) => {
 app.use('/user',userRoutes)
 app.use('/questions',questionRoutes)
 app.use('/answer',answerRoutes)
-
+app.use('/verify',verification)
+app.use('/search',searchStackOverflow)
 const PORT = process.env.PORT || 5000
 
 const DATABASE_URL = process.env.CONNECTION_URL
