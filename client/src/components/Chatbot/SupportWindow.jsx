@@ -7,7 +7,7 @@ import SearchBot from './SearchBot.jsx'
 const SupportWindow = props => {
     // const [user, setUser] = useState(false)
     // const [chat, setChat] = useState(false)
-    const [isverified, setIsverified] = useState(true)
+    const [isverified, setIsverified] = useState(false)
   return (
       <div
           className='transition-5'
