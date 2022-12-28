@@ -20,11 +20,11 @@ const SearchStackOverflow = props => {
   return (
     <div className="" style={{
             width: '420px',
-            // height: '530px',
             maxWidth: 'calc(100% - 18px)',
             maxHeight: 'calc(100% - 48px)',
-              // textAlign: 'left',
-              // marginLeft: '70px',
+            overflowWrap: 'break-word',  
+            wordWrap: 'break-word', 
+            wordBreak: 'break-word',
             }}>
       {
           answers.map(ans => (
