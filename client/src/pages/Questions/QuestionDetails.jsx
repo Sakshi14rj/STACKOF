@@ -19,7 +19,7 @@ const QuestionDetails = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const location = useLocation()
-    const url = 'stack-overflow-clone-namasivaayam-l.netlify.app'
+    const url = process.env.REACT_APP_FRONT_END
     const [answer, setAnswer] = useState('')
     const { id } = useParams()
     // var questionsList = [{ 
