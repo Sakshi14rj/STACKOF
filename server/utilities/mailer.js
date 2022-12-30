@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
 
-function Mailer(otp) {
+async function Mailer (otp) {
     let mailTransporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -15,13 +15,13 @@ function Mailer(otp) {
         text: JSON.stringify(otp.otp)
     };
     
-    mailTransporter.sendMail(mailDetails, function (err, data) {
+    mailTransporter.sendMail(mailDetails, async function (err, data) {
         if (err) {
             console.log('Error Occurs', err);
-            return false
+            return false;
         } else {
             console.log('Email sent successfully');
-            return true
+            return true;
         }
     });
 }

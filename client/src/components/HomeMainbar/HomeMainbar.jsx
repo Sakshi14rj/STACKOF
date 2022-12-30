@@ -61,8 +61,8 @@ const HomeMainbar = () => {
   const questionsList = useSelector(state => state.questionReducer)
   
   const location = useLocation()
-    var user = useSelector((state)=>(state.currentUserReducer))
-    const navigate = useNavigate()
+  var user = useSelector((state)=>(state.currentUserReducer))
+  const navigate = useNavigate()
 
   const checkAuth = () => {
     if(user===null){

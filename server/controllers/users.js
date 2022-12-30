@@ -8,7 +8,7 @@ export const getAllUsers = async (req, res) => {
             allUserDetails.push({...users._doc})
         });
         // console.log(allUserDetails)
-        res.status(200).json(allUserDetails)
+        res.status(200).send(allUserDetails)
     } catch (error) {
         console.log('controllers, users getAllUsers',error);
     }
@@ -22,8 +22,9 @@ export const updateProfile = async (req, res) => {
     }
     try {
         const updatedProfile = await users.findByIdAndUpdate(_id,{$set:{'name':name,'about':about,'tags':tags}},{new:true})
-        res.status(200).json(updatedProfile)
+        res.status(200).send(updatedProfile)
     } catch (error) {
         console.log('controllers, users updateProfile',error);
     }
 }
+

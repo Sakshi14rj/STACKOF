@@ -8,7 +8,7 @@ import Questions from './pages/Questions/Questions';
 import Tags from './pages/Tags/Tags';
 import Users from './pages/Users/Users';
 import UserProfile from './pages/UserProfile/UserProfile';
-
+import SocialMedia from './pages/SocialMedia/pages/home/Home'
 
 const Routing = () => {
   return (
@@ -21,6 +21,7 @@ const Routing = () => {
       <Route path='/Tags' element={< Tags />}/>
       <Route path='/Users' element={< Users />}/>
       <Route path='/Users/:id' element={< UserProfile />}/>
+      <Route path='/SocialMedia' element={< SocialMedia />}/>
     </Routes>
   )
 }

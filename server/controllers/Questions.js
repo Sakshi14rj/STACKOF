@@ -7,17 +7,17 @@ export const AskQuestion = async (req, res) => {
     const postQuestion = new Questions(postQuestionData)
     try {
         await postQuestion.save()
-        res.status(200).json("posted a question successfully")
+        res.status(200).send("posted a question successfully")
     } catch (error) {
         console.log('question.js controllers',error);
-        res.status(409).json("Couldn't post a question")
+        res.status(409).send("Couldn't post a question")
     }
 }
 
 export const getAllQuestions = async (req, res) => {
     try {
         const questionList = await Questions.find()    
-        res.status(200).json(questionList)
+        res.status(200).send(questionList)
     } catch (error) {
         console.log('controllers questions.js getAllQuestions',error);
     }
@@ -34,7 +34,7 @@ export const deleteQuestion = async (req, res) => {
         await Questions.findByIdAndRemove(_id)
         return res.status(404).send('successfully question removed')
     } catch (error) {
-        res.status(404).json({message:error.message})
+        res.status(404).send({message:error.message})
     }
 }
 

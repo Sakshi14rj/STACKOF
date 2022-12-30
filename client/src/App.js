@@ -24,7 +24,7 @@ function App() {
         <Navbar />
         <Routing />
       </Router >
-        <Chatbot/>
+      <Chatbot/>
     </div>
   );
 }

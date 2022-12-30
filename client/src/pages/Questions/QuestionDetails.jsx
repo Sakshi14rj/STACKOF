@@ -14,12 +14,12 @@ import DisplayAnswer from './DisplayAnswer'
 
 const QuestionDetails = () => {
     const User = useSelector((state) => (state.currentUserReducer))
-    const users = useSelector((state) => state.usersReducer)
-    console.log(users);
+    // const users = useSelector((state) => state.usersReducer)
+    // console.log(users);
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const location = useLocation()
-    const url = 'stack-overflow-clone-namasivaayam-l.netlify.app'
+    const url = process.env.REACT_APP_FRONT_END
     const [answer, setAnswer] = useState('')
     const { id } = useParams()
     // var questionsList = [{ 
@@ -83,7 +83,7 @@ const QuestionDetails = () => {
             if (answer === '') {
                 alert('Enter an answer before submitting')
             } else {
-                console.log(User?.result?._id);
+                // console.log(User?.result?._id);
                 dispatch(postAnswer({id, noOfAnswers: answerLength+1, answerBody: answer, userAnswered: User.result.name,userId: User?.result?._id }))
             }
         }
@@ -94,16 +94,16 @@ const QuestionDetails = () => {
     }
 
     const handleDelete = () => {
-        console.log(id);
+        // console.log(id);
         dispatch(deleteQuestion(id,navigate))
     }
 
     const handleUpVote = () => {
-        console.log('upVoted');
+        // console.log('upVoted');
         dispatch(voteQuestion(id,'upVote',User?.result?._id))
     }
     const handleDownVote = () => {
-        console.log('downVoted');
+        // console.log('downVoted');
         dispatch(voteQuestion(id,'downVote',User?.result?._id))
         
     }

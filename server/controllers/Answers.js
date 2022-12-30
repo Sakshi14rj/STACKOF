@@ -14,9 +14,9 @@ export const postAnswer = async (req, res) => {
     updateNoOfQuestions( _id, noOfAnswers)
     try {
         const updatedQuestion = await Questions.findByIdAndUpdate(_id, { $addToSet: { 'answer': [{ answerBody, userAnswered, userId }] } })
-        res.status(200).json(updatedQuestion)
+        res.status(200).send(updatedQuestion)
     } catch (error) {
-        res.status(404).json('controllers answers postAnswer',error)
+        res.status(404).send('controllers answers postAnswer',error)
     }
 }
 
@@ -43,7 +43,7 @@ export const deleteAnswer = async (req,res) => {
             { _id },
             { $pull:{'answer':{_id: answerId}}}
         )
-        res.status(200).json({message:'answer successfully deleted'})
+        res.status(200).send({message:'answer successfully deleted'})
     } catch (error) {
         
     }
