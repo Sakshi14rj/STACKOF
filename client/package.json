@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://stack-overflow-clone-namasivaayam-l.netlify.app",
   "dependencies": {
-    "@ant-design/icons": "^4.8.0",
+  "@ant-design/icons": "^4.8.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
