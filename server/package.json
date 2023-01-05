@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --trace-warnings --es-module-specifier-resolution=node index.js"
+    "start": "nodemon --es-module-specifier-resolution=node index.js"
   },
   "keywords": [],
   "author": "",
