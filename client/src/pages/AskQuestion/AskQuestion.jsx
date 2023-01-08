@@ -1,16 +1,29 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import './AskQuestion.css'
 import {useDispatch, useSelector} from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import {askQuestion} from '../../actions/question'
-const AskQuestion = () => {
+import { askQuestion } from '../../actions/question'
+import axios from 'axios'
 
+const AskQuestion = () => {
+    
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const User = useSelector((state) => (state.currentUserReducer))
     const [questionTitle,setQuestionTitle ] = useState('')
     const [questionBody, setQuestionBody ] = useState('')
-    const [questionTags, setQuestionTags ] = useState('')
+    const [questionTags, setQuestionTags] = useState('')
+    const [noOfQuestions, setNoOfQuestions] = useState(0)
+    useEffect(() => {
+        const getNoOfQuestions = async() => {
+            const { res: data } = await axios.get('/plans/getNoOfQuestions')
+            console.log(data);
+            setNoOfQuestions(data.noOfQuestions)
+        }
+      return () => {
+        getNoOfQuestions()
+      }
+    }, [])
     const handleSubmit = (e) => {
         e.preventDefault()
         dispatch(askQuestion({questionTitle,questionBody,questionTags,userPosted: User.result.name, userId: User.result._id }, navigate))
@@ -47,7 +60,8 @@ const AskQuestion = () => {
                             <input type="text" name="ask-ques-tags" id="ask-ques-tags" placeholder='tags' onChange={e=>setQuestionTags(e.target.value.split(' '))}/>
                         </label>
                     </div>
-                    <input className='review-btn' type="submit" value="Review your question" />
+                    <p>You have { noOfQuestions } question(s) remaining for today</p>
+                    <input className='review-btn' type="submit" value="Post your question" />
                 </form>
             </div>
         </div>
