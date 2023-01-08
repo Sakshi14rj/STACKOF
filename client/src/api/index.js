@@ -9,11 +9,11 @@ API.interceptors.request.use((req) => {
     return req
 })
 
-export const logIn = (authData) => API.post('/user/login', authData)
+export const logIn = (authData) => API.post('/users/login', authData)
 
 
 
-export const signUp = (authData) => API.post('/user/signup', authData)
+export const signUp = (authData) => API.post('/users/signup', authData)
 
 
 
@@ -25,8 +25,8 @@ export const voteQuestion = (id,value, userId) => API.patch(`/questions/vote/${i
 export const postAnswer = (id, noOfAnswers, answerBody, userAnswered, userId) => API.patch(`/answer/post/:${id}`, { noOfAnswers, answerBody, userAnswered, userId })
 export const deleteAnswer = (id,answerId,noOfAnswers) => API.patch(`/answer/delete/:${id}`,{answerId,noOfAnswers})
 
-export const fetchAllUsers = () => API.get('/user/getAllUsers')
-export const updateProfile = (id, updateData) => API.patch(`/user/update/${id}`, updateData)
+export const fetchAllUsers = () => API.get('/users/getAllUsers')
+export const updateProfile = (id, updateData) => API.patch(`/users/update/${id}`, updateData)
 export const generateOTP = (email) => API.post('/verify/email',{email})
 export const verifyOTP = (email,recvOTP) => API.post('/verify/otp',{email,recvOTP})
 export const searchStackOverflow = (question) => API.post('/search/stackoverflow',{question})

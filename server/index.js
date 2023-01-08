@@ -12,6 +12,8 @@ import cron from 'node-cron'
 import helmet from 'helmet'
 import updatePlans from './utilities/updatePlans'
 import plans from './routes/Plans'
+import postRoutes from './routes/post.routes'
+
 
 const app = express()
 
@@ -28,13 +30,14 @@ app.get('/', (req, res) => {
     console.log(req.protocol + '://' + req.get('host') + req.originalUrl)
 })
 
-app.use('/user',userRoutes)
+app.use('/users',userRoutes)
 app.use('/questions', questionRoutes)
 app.use('/answer',answerRoutes)
 app.use('/verify',verification)
 app.use('/search',searchStackOverflow)
 app.use('/payment', paymentRoutes);
 app.use('/plans', plans)
+app.use('/posts',postRoutes)
 
 const PORT = process.env.PORT || 5000
 
