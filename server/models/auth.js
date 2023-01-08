@@ -7,22 +7,9 @@ const userSchema = mongoose.Schema({
     about: { type: String, default: '' },
     tags: { type: [String] },
     joinedOn: { type: Date, default: Date.now },
-    followers: {
-        type: Array,
-        default: [],
-    },
-    followings: {
-        type: Array,
-        default: [],
-    },
-    isAdmin: {
-        type: Boolean,
-        default: false,
-    },
-    desc: {
-        type: String,
-        max: 50,
-    },
+    planOpted: { type: String, default: 'Free', required: true },
+    planOptedOn: { type: Date },
+    noOfQuestions:  {type: Number, default:1, required:true}
 })
 
 export default mongoose.model('User', userSchema)

@@ -5,7 +5,7 @@
         {
             "label": "start client",
             "type": "shell",
-            "command": "cd client/; npm start",
+            "command": "cd client/ && npm start",
             // "windows": {
             //     "command": "cd client/ && npm start"
             // },
@@ -21,7 +21,7 @@
         {
             "label": "start server",
             "type": "shell",
-            "command": "cd server/ ;nodemon --experimental-modules --es-module-specifier-resolution=node index.js",
+            "command": "cd server/ && npm start",
             // "windows": {
             //     "command": "cd server/ && nodemon"
             // },
