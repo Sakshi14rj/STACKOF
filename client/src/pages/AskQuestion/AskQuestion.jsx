@@ -16,13 +16,11 @@ const AskQuestion = () => {
     const [noOfQuestions, setNoOfQuestions] = useState(0)
     useEffect(() => {
         const getNoOfQuestions = async() => {
-            const { res: data } = await axios.get('/plans/getNoOfQuestions')
+            const { res: data } = await axios.post(process.env.REACT_APP_NODE_JS+'plans/getNoOfQuestions')
             console.log(data);
             setNoOfQuestions(data.noOfQuestions)
         }
-      return () => {
         getNoOfQuestions()
-      }
     }, [])
     const handleSubmit = (e) => {
         e.preventDefault()

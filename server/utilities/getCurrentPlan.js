@@ -6,6 +6,7 @@ const router = express.Router()
 router.post('/', async (req, res) => {
     try {
         const plan = await User.findById(req.body.id).planOpted
+        console.log(plan);
         return res.status(200).json({plan: plan})
     } catch (error) {
         console.log('serv utils getCurrentPlan ', error);

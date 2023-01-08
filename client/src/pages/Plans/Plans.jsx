@@ -5,7 +5,6 @@ import {useSelector} from 'react-redux'
 import axios from 'axios'
 
 const Plans = () => {
-  const [plan, setPlan] = useState("free");
   const [planStatus, setPlanStatus] = useState(false)
   
   var User = useSelector((state) => (state.currentUserReducer))
@@ -15,38 +14,32 @@ const Plans = () => {
       const { res: data } = await axios.post(process.env.REACT_APP_NODE_JS + 'plans/getCurrentPlan', { id: User.result._id })
       console.log(data);
     }
-    return () => {
-      getCurrentPlanStatus()
-    }
+    getCurrentPlanStatus()
   }, [])
   
   return (
     <div className="home-container-1">
       <LeftSidebar />
       <div
-        className="home-container-2"
-        style={{ display: "flex", height: "50%", gap: "15px" }}
+        // className="home-container-2"
+        style={{ display: "flex", height: "50%", gap: "15px", padding: '60px 10px'}}
       >
-        <PlanCard isBuyable={false} noOfQuestions="1" price="0" plan="Free" />
+        <PlanCard
+          isBuyable={false}
+          noOfQuestions="1"
+          price="0"
+          plan="Free" />
         <PlanCard
           isBuyable={true}
           noOfQuestions="5"
           price={100}
           plan="Silver"
-          pay={(token) => {
-            setPlan("Silver");
-            // handleSubmit(token);
-          }}
         />
         <PlanCard
           isBuyable={true}
           noOfQuestions="Unlimited"
           price={1000}
           plan="Gold"
-          pay={(token) => {
-            setPlan("Gold");
-            // handleSubmit(token);
-          }}
         />
       </div>
     </div>
