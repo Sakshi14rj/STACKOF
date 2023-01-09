@@ -12,10 +12,15 @@ const signup = async (req, res) => {
             console.log('signup',req.body);
             return res.status(404).send({message:"User already exists."})
         }
-        
-        const hashedPassword = await bcrypt.hash(password,12)
-        const newUser = await users.create({name,email,password:hashedPassword})
-        const token = jwt.sign({ email: newUser.email, id: newUser._id }, "test",{expiresIn:'1h'})
+        // const hashedPassword = await bcrypt.hash(password,12)
+        const newUser = new users({
+          name: name,
+          email: email,
+          password: password
+        })
+        await newUser.save()
+        // const token = jwt.sign({ email: newUser.email, id: newUser._id }, "test",{expiresIn:'1h'})
+        const token = jwt.sign({ email: newUser.email, _id: newUser._id }, process.env.JWT_SECRET,{expiresIn:'1h'})
         console.log('signup',newUser);
         res.status(200).send({result:newUser,token})
 

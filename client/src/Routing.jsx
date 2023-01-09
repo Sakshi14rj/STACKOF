@@ -13,6 +13,15 @@ import Success from './pages/Plans/Success';
 import Failure from './pages/Plans/Failure';
 import StripeForm from './pages/Payment/StripeForm';
 
+import SMHome from './pages/SocialMedia/core/SMHome.js'
+// import SMUsers from './pages/SocialMedia/user/Users'
+// import Signup from './pages/SocialMedia/user/Signup'
+// import Signin from './pages/SocialMedia/auth/Signin'
+// import EditProfile from './pages/SocialMedia/user/EditProfile'
+// import Profile from './pages/SocialMedia/user/Profile'
+// import PrivateRoute from './pages/SocialMedia/auth/PrivateRoute'
+// import Menu from './pages/SocialMedia/core/Menu'
+
 const Routing = () => {
   return (
     <Routes>
@@ -27,7 +36,9 @@ const Routing = () => {
       <Route path='/Plans' element={< Plans />}/>
       <Route path='/Payment' element={< StripeForm />}/>
       <Route path='/Success' element={< Success />}/>
-      <Route path='/Failure' element={< Failure />}/>
+      <Route path='/Failure' element={< Failure />} />
+      
+      <Route exact path="/SocialMedia" component={SMHome}/>
     </Routes>
   )
 }

@@ -21,6 +21,7 @@ const StripeForm = (props) => {
         })
         .then((res) => res.json())
         .then((data) => setClientSecret(data.clientSecret));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const appearance = {

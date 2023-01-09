@@ -16,6 +16,7 @@ const SearchStackOverflow = props => {
         console.log(res.message.slice(0,2));
         setLoading(false)
       })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
   return (
     <div className="" style={{

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import PlanCard from "./Card/PlanCard";
 import LeftSidebar from "../../components/LeftSidebar/LeftSidebar";
 import {useSelector} from 'react-redux'
 import axios from 'axios'
 
 const Plans = () => {
-  const [planStatus, setPlanStatus] = useState(false)
+  // const [planStatus, setPlanStatus] = useState(false)
   
   var User = useSelector((state) => (state.currentUserReducer))
   
@@ -15,6 +15,7 @@ const Plans = () => {
       console.log(data);
     }
     getCurrentPlanStatus()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   
   return (

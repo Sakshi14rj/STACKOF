@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-
+import crypto from 'crypto'
 const UserSchema = mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
@@ -30,10 +30,11 @@ const UserSchema = mongoose.Schema({
   
   UserSchema
     .virtual('password')
-    .set(function(password) {
+    .set(function (password) {
       this._password = password
       this.salt = this.makeSalt()
       this.hashed_password = this.encryptPassword(password)
+      // console.log(hashed_password);
     })
     .get(function() {
       return this._password
