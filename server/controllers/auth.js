@@ -9,7 +9,6 @@ const signup = async (req, res) => {
     try {
         const user = await users.findOne({ email })
         if (user) {
-            console.log('signup',req.body);
             return res.status(404).send({message:"User already exists."})
         }
         // const hashedPassword = await bcrypt.hash(password,12)
@@ -21,11 +20,10 @@ const signup = async (req, res) => {
         await newUser.save()
         // const token = jwt.sign({ email: newUser.email, id: newUser._id }, "test",{expiresIn:'1h'})
         const token = jwt.sign({ email: newUser.email, _id: newUser._id }, process.env.JWT_SECRET,{expiresIn:'1h'})
-        console.log('signup',newUser);
-        res.status(200).send({result:newUser,token})
+        res.status(200).send({user: {_id: newUser._id, name: newUser.name, email: newUser.email},result:newUser,token})
 
     } catch (error) {
-        res.status(500).send({message:error+' auth - controller'})
+        res.status(500).send({message:error+' auth - controller signup'})
     }
 }
 const login = async (req, res) => {
@@ -48,7 +46,7 @@ const login = async (req, res) => {
         res.status(200).json({ user: {_id: user._id, name: user.name, email: user.email},result: user, token })
         
     } catch (error) {
-        res.status(500).send({message:error+' auth - controller'})
+        res.status(500).send({message:error+' auth - controller login'})
     }
 }
 

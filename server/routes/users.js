@@ -31,7 +31,7 @@ router.get('/signout',signout)
 router.get('/getAllUsers', getAllUsers)
 router.patch('/update/:id', auth, updateProfile)
 
-router.route('/')
+router.route('/create')
   .get(list)
   .post(create)
 

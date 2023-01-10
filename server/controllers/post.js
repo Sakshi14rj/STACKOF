@@ -15,7 +15,7 @@ const create = (req, res, next) => {
     let post = new Post(fields)
     post.postedBy= req.profile
     if(files.photo){
-      post.photo.data = fs.readFileSync(files.photo.path)
+      post.photo.data = fs.readFileSync(files.photo.filepath)
       post.photo.contentType = files.photo.type
     }
     try {
@@ -33,13 +33,13 @@ const postByID = async (req, res, next, id) => {
   try{
     let post = await Post.findById(id).populate('postedBy', '_id name').exec()
     if (!post)
-      return res.status('400').json({
+      return res.status(400).json({
         error: "Post not found"
       })
     req.post = post
     next()
   }catch(err){
-    return res.status('400').json({
+    return res.status(400).json({
       error: "Could not retrieve use post"
     })
   }
