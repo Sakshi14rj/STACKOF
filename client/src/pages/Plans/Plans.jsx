@@ -12,7 +12,7 @@ const Plans = () => {
   useEffect(() => {
     const getCurrentPlanStatus = async()=> {
       const { res: data } = await axios.post(process.env.REACT_APP_NODE_JS + 'plans/getCurrentPlan', { id: User.result._id })
-      console.log(data);
+      // console.log(data);
     }
     getCurrentPlanStatus()
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -5,9 +5,9 @@
         {
             "label": "start client",
             "type": "shell",
-            "command": "cd client/ && npm start",
+            "command": "cd client/ ; npm start",
             // "windows": {
-            //     "command": "cd client/ && npm start"
+            //     "command": "cd client/ ; npm start"
             // },
             "group": "none",
             "presentation": {
@@ -21,9 +21,9 @@
         {
             "label": "start server",
             "type": "shell",
-            "command": "cd server/ && npm start",
+            "command": "cd server/ ; npm start",
             // "windows": {
-            //     "command": "cd server/ && nodemon"
+            //     "command": "cd server/ ; nodemon"
             // },
             "group": "none",
             "presentation": {

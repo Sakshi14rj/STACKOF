@@ -13,14 +13,11 @@ import Success from './pages/Plans/Success';
 import Failure from './pages/Plans/Failure';
 import StripeForm from './pages/Payment/StripeForm';
 
-import SMHome from './pages/SocialMedia/core/SMHome.js'
-// import SMUsers from './pages/SocialMedia/user/Users'
-// import Signup from './pages/SocialMedia/user/Signup'
-// import Signin from './pages/SocialMedia/auth/Signin'
-// import EditProfile from './pages/SocialMedia/user/EditProfile'
-// import Profile from './pages/SocialMedia/user/Profile'
-// import PrivateRoute from './pages/SocialMedia/auth/PrivateRoute'
-// import Menu from './pages/SocialMedia/core/Menu'
+import SMHome from './pages/SocialMedia/Home/SMHome'
+import SMUsers from './pages/SocialMedia/User/SMUsers'
+import EditProfile from './pages/SocialMedia/User/EditProfile';
+import Profile from './pages/SocialMedia/User/Profile';
+import PrivateRoute from './api/PrivateRoute';
 
 const Routing = () => {
   return (
@@ -38,7 +35,10 @@ const Routing = () => {
       <Route path='/Success' element={< Success />}/>
       <Route path='/Failure' element={< Failure />} />
       
-      <Route exact path="/SocialMedia" component={SMHome}/>
+      <Route path="/SocialMedia" element={<SMHome />} />
+      <Route path="/SocialMedia/Users" element={<SMUsers/>}/>
+      <Route path="/SocialMedia/User/edit/:userId" element={<EditProfile/>}/>
+      <Route path="/SocialMedia/User/:userId" element={<Profile/>}/>
     </Routes>
   )
 }
