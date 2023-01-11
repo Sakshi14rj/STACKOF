@@ -19,7 +19,7 @@ const signup = async (req, res) => {
         })
         await newUser.save()
         // const token = jwt.sign({ email: newUser.email, id: newUser._id }, "test",{expiresIn:'1h'})
-        const token = jwt.sign({ email: newUser.email, _id: newUser._id }, process.env.JWT_SECRET,{expiresIn:'1h'})
+        const token = jwt.sign({ email: newUser.email, _id: newUser._id }, process.env.JWT_SECRET,{expiresIn:'24h'})
         res.status(200).send({user: {_id: newUser._id, name: newUser.name, email: newUser.email},result:newUser,token})
 
     } catch (error) {
@@ -39,7 +39,7 @@ const login = async (req, res) => {
         if (!user.authenticate(password)) {
             return res.status(401).send({error:'Invalid Credentials'})
         }
-        const token = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET,{expiresIn:'1h'})
+        const token = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET,{expiresIn:'24h'})
         res.cookie("t", token, {
             expire: new Date() + 9999
           })
