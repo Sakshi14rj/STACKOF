@@ -9,7 +9,6 @@ import { useNavigate } from "react-router";
 
 export default function PlanCard(props) {
   const navigate = useNavigate()
-
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -32,20 +31,15 @@ export default function PlanCard(props) {
         {
           !props.isBuyable
             ?
-          <Button size="small" onClick={()=>navigate('/Payment?Silver')}>Applied</Button>
+          <Button size="small" >Applied</Button>
           : 
-          <Button size="small" onClick={()=>navigate(`/Payment?${props.plan}`)}>Buy Now</Button>
+            <Button size="small" onClick={() => {
+              if(props.plan!==props.planOpted)
+                navigate(`/Payment?${props.plan}`)
+              else
+                return
+            }}>{props.plan === props.planOpted ? 'Applied' : 'Buy Now'}</Button>
 
-          // <StripeCheckout
-          //   stripeKey={process.env.REACT_APP_STRIPE_PUB_KEY}
-          //   label='Buy Now'
-          //   name='pay with cc'
-          //   billingAddress
-          //   shippingAddress
-          //   amount={parseInt(props.price)}
-          //   description={`Your total is ${props.price}`}
-          //   token={props.pay}
-          // />
         }
       </CardActions>
     </Card>

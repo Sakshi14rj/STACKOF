@@ -3,7 +3,7 @@ import { styles } from './styles.js'
 import EmailForm from './OTPVerification/EmailForm.jsx'
 // import ChatRoom from './ChatRoom.jsx'
 import SearchBot from './SearchBot.jsx'
-
+import './Bot.css'
 const SupportWindow = props => {
     // const [user, setUser] = useState(false)
     // const [chat, setChat] = useState(false)
@@ -13,7 +13,7 @@ const SupportWindow = props => {
           className='transition-5'
           style={{
             ...styles.supportWindow,
-            ...{opacity: props.visible ? '1':'0'}
+            ...{display: props.visible ? '':'none'}
           }}
     >
     { !isverified ? 

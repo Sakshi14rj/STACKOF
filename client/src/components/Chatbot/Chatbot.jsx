@@ -17,14 +17,14 @@ const Chatbot = () => {
         return () => {
             document.removeEventListener('mousedown',handleClickOutside)
         } 
-    }, [ref])
+    }, [ref, visible])
   return (
       <div ref={ref}>
           <SupportWindow
               visible={visible}
           />
           <AvatarChatbot
-              onClick={ ()=> setVisible(true) }
+              onClick={ ()=> setVisible(!visible) }
               style={{
                 position: 'fixed',
                 bottom: '24px',

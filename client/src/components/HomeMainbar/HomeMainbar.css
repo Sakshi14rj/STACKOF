@@ -16,7 +16,7 @@
 }
 
 .main-bar-header .ask-btn{
-    padding: 10px 15px;
+    padding: 10px 10px;
     border-radius: 4px;
     background-color: #009dff;
     color: white;
@@ -41,6 +41,11 @@
 
 .display-question-container .display-votes-ans{
     padding:20px;
+}
+@media (max-width:400px) {
+    .display-question-container .display-votes-ans{
+        padding:10px;
+    }
 }
 
 .display-question-container .display-votes-ans p{

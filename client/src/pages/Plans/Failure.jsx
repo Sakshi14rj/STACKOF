@@ -2,7 +2,7 @@ import React from 'react'
 
 const Failure = () => {
   return (
-    <div>Failure</div>
+    <div><br /> <br /><br />Failure</div>
   )
 }
 

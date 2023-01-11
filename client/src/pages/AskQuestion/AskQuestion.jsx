@@ -13,7 +13,7 @@ const AskQuestion = () => {
     const [questionTitle,setQuestionTitle ] = useState('')
     const [questionBody, setQuestionBody ] = useState('')
     const [questionTags, setQuestionTags] = useState('')
-    const [noOfQuestions, setNoOfQuestions] = useState(0)
+    const [noOfQuestions, setNoOfQuestions] = useState(User.result.noOfQuestions)
     useEffect(() => {
         const getNoOfQuestions = async() => {
             const { res: data } = await axios.post(process.env.REACT_APP_NODE_JS+'plans/getNoOfQuestions')

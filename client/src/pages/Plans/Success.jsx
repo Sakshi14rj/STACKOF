@@ -1,8 +1,8 @@
-import React from 'react'
-
+import React, { useEffect } from 'react'
 const Success = () => {
+  localStorage.removeItem('Profile')
   return (
-    <div>Success</div>
+    <div><br /> <br /><br />Success <a href='/Auth'>LogIn Again Please</a></div>
   )
 }
 

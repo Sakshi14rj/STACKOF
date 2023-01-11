@@ -52,14 +52,15 @@ const Navbar = () => {
                     {/* <SearchSharpIcon className='search-icon' fontSize='medium' /> */}
                     <img src={ search } alt="search" width="18" className='search-icon'/>
                 </form> 
-
+                {/* <div> */}
+                    
                 {User === null ?
                     <Link to='/Auth' className='nav-item nav-links'>Log in</Link>
                         :
-                    <>
+                        <>
                         <Avatar
                             backgroundColor='#009dff'
-                            px='10px' py='7px'
+                            px='10px' py='5px'
                             borderRadius='50%'
                             color='white'
                         >
@@ -70,6 +71,7 @@ const Navbar = () => {
                         <Button onClick={handleLogout}>Log out</Button>
                     </> 
                     }
+                    {/* </div> */}
             </div>  
         </nav>
     )

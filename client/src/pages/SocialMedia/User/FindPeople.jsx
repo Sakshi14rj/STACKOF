@@ -119,7 +119,7 @@ export default function FindPeople() {
                           verticalAlign: "middle",
                         }}
                       >
-                        <ViewIcon />
+                        {/* <ViewIcon /> */}
                       </IconButton>
                     </Link>
                     <Button

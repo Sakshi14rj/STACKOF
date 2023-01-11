@@ -4,6 +4,7 @@ import express from 'express'
 const router = express.Router()
 
 router.post('/', async (req, res) => {
+    console.log('i');
     try {
         const plan = await User.findById(req.body.id).planOpted
         console.log(plan);

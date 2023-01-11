@@ -45,7 +45,7 @@ const NewsFeed = () => {
       setPosts(updatedPosts)
     }
   return (
-    <Card >
+    <Card sx={{ width:'100%'}}>
     <Typography type="title" >
       Newsfeed
     </Typography>

@@ -4,13 +4,13 @@ import {updateProfile}  from '../../actions/users'
 const EditProfileForm = ({ currentUser, setSwitch }) => {
     const [name, setName] = useState(currentUser?.result?.name)
     const [about, setAbout] = useState(currentUser?.result?.about)
-    const [tags, setTags] = useState('')
+    const [tags, setTags] = useState(currentUser?.result?.tags)
     const dispatch = useDispatch()
     const handleSubmit = (e) => {
         e.preventDefault()
         setTags(tags.split(' '))
         if (tags.length === 0) {
-            dispatch(updateProfile(currentUser?.result._id, { name, about, tags: currentUser?.result?.tags }))
+            dispatch(updateProfile(currentUser?.result._id, { name, about, tags: tags }))
         } else {
             dispatch(updateProfile(currentUser?.result._id, { name, about, tags }))
         }

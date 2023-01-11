@@ -134,11 +134,13 @@ const create = async (req, res) => {
     //   res.set("Content-Type", req.profile.photo.contentType)
     //   return res.send(req.profile.photo.data)
     // }
+    return res.sendFile(process.cwd()+'../../client/src/assets/profile-pic.png')
     // next()
-    return
+    // return res.status(200)
   }
   
-  const defaultPhoto = (req, res) => {
+const defaultPhoto = (req, res) => {
+    // return res.status(200)
     return res.sendFile(process.cwd()+'../../client/src/assets/profile-pic.png')
   }
   
