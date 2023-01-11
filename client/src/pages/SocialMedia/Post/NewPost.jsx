@@ -98,6 +98,7 @@ const NewPost = (props) => {
               width: "90%",
             }}
             margin="normal"
+            inputProps={{ maxLength: 60 }}
           /><br/>
           <input
             accept="image/*"
