@@ -6,19 +6,18 @@ import { useNavigate } from "react-router";
 import './Plans.css'
 const Plans = () => {
   var User = useSelector((state) => state.currentUserReducer);
-  console.log(User);
-  const plan = User.result.planOpted;
-  const profile = localStorage.getItem("Profile");
+  const plan = User?.result.planOpted || null
   const navigate = useNavigate();
+  const profile = localStorage.getItem("Profile");
   useEffect(() => {
-    if (!profile) {
-      navigate("/Auth");
-    }
+      if (!profile) {
+        navigate("/Auth");
+      }
   }, [navigate, profile]);
   return (
     <div className="home-container-1">
       <LeftSidebar />
-      <div
+      {profile && <div
         className="home-container-2"
         style={{
           display: "flex",
@@ -42,7 +41,7 @@ const Plans = () => {
           price={1000}
           plan="Gold"
         />
-      </div>
+      </div>}
     </div>
   );
 };
