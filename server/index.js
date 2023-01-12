@@ -43,7 +43,7 @@ app.use('/posts',postRoutes)
 
 const PORT = process.env.PORT || 5000
 
-cron.schedule('* * 10 * * *', () => {
+cron.schedule('* 38 0 * * *', () => {
     console.log('Updating Plans', Date.now());
     updatePlans()
 });

@@ -16,9 +16,9 @@ const AskQuestion = () => {
     const [noOfQuestions, setNoOfQuestions] = useState(User.result.noOfQuestions)
     useEffect(() => {
         const getNoOfQuestions = async() => {
-            const { res: data } = await axios.post(process.env.REACT_APP_NODE_JS+'plans/getNoOfQuestions')
+            // const { res: data } = await axios.post(process.env.REACT_APP_NODE_JS+'plans/getNoOfQuestions')
             // console.log(data);
-            setNoOfQuestions(data.noOfQuestions)
+            // setNoOfQuestions(data.noOfQuestions)
         }
         getNoOfQuestions()
     }, [])
@@ -58,7 +58,7 @@ const AskQuestion = () => {
                             <input type="text" name="ask-ques-tags" id="ask-ques-tags" placeholder='tags' onChange={e=>setQuestionTags(e.target.value.split(' '))}/>
                         </label>
                     </div>
-                    <p>You have { noOfQuestions } question(s) remaining for today</p>
+                    {/* <p>You have { noOfQuestions } question(s) remaining for today</p> */}
                     <input className='review-btn' type="submit" value="Post your question" />
                 </form>
             </div>
