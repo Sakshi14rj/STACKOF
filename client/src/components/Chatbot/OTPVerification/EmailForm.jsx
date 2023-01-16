@@ -99,7 +99,7 @@ const EmailForm = (props) => {
           />
         </form>
         <div style={styles.bottomText}>
-          Enter your email for OTP <br /> {otpStatus} <br /> Enter OTP Below
+          Type your email &  <br /> Press Enter to get OTP <br /> {otpStatus} <br /> Enter OTP Below &  Press Enter
         </div>
         <form
           onSubmit={(e) => verify(e)}
