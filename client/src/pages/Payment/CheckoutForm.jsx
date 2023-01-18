@@ -31,6 +31,7 @@ export default function CheckoutForm() {
       switch (paymentIntent.status) {
         case "succeeded":
           setMessage("Payment succeeded!");
+          localStorage.removeItem('Profile')
           break;
         case "processing":
           setMessage("Your payment is processing.");
@@ -60,7 +61,7 @@ export default function CheckoutForm() {
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: process.env.REACT_APP_FRONT_END+"Success",
+        return_url: process.env.REACT_APP_FRONT_END,
       },
     });
 
