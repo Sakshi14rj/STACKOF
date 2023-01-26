@@ -8,6 +8,8 @@ I **started** my Internship on **December 10 of 2022**.
 
 I **completed** cloning the required website on **December 23 of 2022**.
 
+![1674766637894](image/README/1674766637894.png)
+
 Once I did that, I got **3 additional tasks** to complete within the next **15 days**.
 
 ### Tasks Assigned
@@ -82,22 +84,15 @@ Once I did that, I got **3 additional tasks** to complete within the next **15 d
 
 ![1674342484144](image/README/1674342484144.png)
 
-
 ![1674342644090](image/README/1674342644090.png)
-
 
 ![1674342495090](image/README/1674342495090.png)
 
-
 ![1674342075579](image/README/1674342075579.png)          ![1674342181884](image/README/1674342181884.png)
 
-
-![1674343695563](image/README/1674343695563.png)          ![1674343757188](image/README/1674343757188.png)   
-
-
+![1674343695563](image/README/1674343695563.png)          ![1674343757188](image/README/1674343757188.png)
 
 ![1674342681740](image/README/1674342681740.png)
-
 
 ![1674342691282](image/README/1674342691282.png)
 
