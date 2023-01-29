@@ -1,4 +1,4 @@
-## This Repository is my Internship MERN Stack project done at [NullClass](https://nullclass.com/).
+## This Repository is my Internship- MERN Stack project done at [NullClass](https://nullclass.com/).
 
 [Click here](https://stack-overflow-clone-namasivaayam-l.netlify.app/), this will take you to my live website.
 
@@ -7,8 +7,6 @@ My first task in my internship was to clone the stackoverflow website, within **
 I **started** my Internship on **December 10 of 2022**.
 
 I **completed** cloning the required website on **December 23 of 2022**.
-
-![1674766637894](image/README/1674766637894.png)
 
 Once I did that, I got **3 additional tasks** to complete within the next **15 days**.
 
@@ -39,6 +37,8 @@ Once I did that, I got **3 additional tasks** to complete within the next **15 d
    7. Remove Like.
    8. Comment.
    9. Delete Post/Comment
+
+![1674766637894](https://file+.vscode-resource.vscode-cdn.net/home/namachu/Documents/Web%20Dev/stack-overflow-clone/image/README/1674766637894.png)
 
 ### Features of this Website
 
@@ -109,3 +109,4 @@ Once I did that, I got **3 additional tasks** to complete within the next **15 d
 ### Future Plans
 
 1. Planned to Integrate Chat GPT in the existing chatbot.
+2. Perform OTP Verification via mobile number.
