@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import Paper from "@mui/material/Paper";
 import List from "@mui/material/List";
@@ -13,7 +14,6 @@ import { Link } from "react-router-dom";
 import { findPeople, follow } from "./../../../api/api-user";
 import auth from "./../../../api/auth-helper";
 import Snackbar from "@mui/material/Snackbar";
-import ViewIcon from "@mui/icons-material/Visibility";
 import { orange, teal } from "@mui/material/colors";
 
 export default function FindPeople() {

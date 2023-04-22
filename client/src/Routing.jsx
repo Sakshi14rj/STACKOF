@@ -17,7 +17,7 @@ import SMHome from './pages/SocialMedia/Home/SMHome'
 import SMUsers from './pages/SocialMedia/User/SMUsers'
 import EditProfile from './pages/SocialMedia/User/EditProfile';
 import Profile from './pages/SocialMedia/User/Profile';
-import PrivateRoute from './api/PrivateRoute';
+// import PrivateRoute from './api/PrivateRoute';
 
 const Routing = () => {
   return (

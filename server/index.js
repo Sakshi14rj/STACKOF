@@ -13,7 +13,7 @@ import helmet from 'helmet'
 import updatePlans from './utilities/updatePlans'
 import plans from './routes/Plans'
 import postRoutes from './routes/post.routes'
-
+import config from './config/config'
 
 const app = express()
 
@@ -47,7 +47,7 @@ cron.schedule('* 38 0 * * *', () => {
     console.log('Updating Plans', Date.now());
     updatePlans()
 });
-const DATABASE_URL = process.env.CONNECTION_URL
+const DATABASE_URL = process.env.CONNECTION_URL || config.mongoUri
 mongoose.connect(DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => app.listen(PORT, () => { console.log(`Server fired up on ${PORT}`) }))
     .catch(err => console.log(err.message))

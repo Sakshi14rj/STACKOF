@@ -24,6 +24,10 @@ const DisplayAnswer = ({question}) => {
     const handleDelete = (answerId, noOfAnswers) => {
         dispatch(deleteAnswer(id,answerId,noOfAnswers-1))
     }
+
+    const handleReply = () => {
+        
+    }
     return (
     <div>
         {
@@ -38,6 +42,9 @@ const DisplayAnswer = ({question}) => {
                                     <button type='button' onClick={()=>handleDelete(ans._id,question.noOfAnswers)}>Delete</button>
                                 )
                             }
+                        </div>
+                        <div>
+                            <button type='button' onClick={handleShare}>Reply</button>
                         </div>
                         <div>
                             <p>Answered {moment(ans.answeredOn).fromNow()}</p>
