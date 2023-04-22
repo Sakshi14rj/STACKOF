@@ -44,7 +44,7 @@ const DisplayAnswer = ({question}) => {
                             }
                         </div>
                         <div>
-                            <button type='button' onClick={handleShare}>Reply</button>
+                            <button type='button' onClick={handleReply}>Reply</button>
                         </div>
                         <div>
                             <p>Answered {moment(ans.answeredOn).fromNow()}</p>
