@@ -24,6 +24,7 @@ export const voteQuestion = (id,value, userId) => API.patch(`/questions/vote/${i
 
 export const postAnswer = (id, noOfAnswers, answerBody, userAnswered, userId) => API.patch(`/answer/post/:${id}`, { noOfAnswers, answerBody, userAnswered, userId })
 export const deleteAnswer = (id,answerId,noOfAnswers) => API.patch(`/answer/delete/:${id}`,{answerId,noOfAnswers})
+export const addReply = (id,userId,answerId,reply) => API.patch(`/answer/reply/:${id}`,{userId,answerId,reply})
 
 export const fetchAllUsers = () => API.get('/users/getAllUsers')
 export const updateProfile = (id, updateData) => API.patch(`/users/update/${id}`, updateData)

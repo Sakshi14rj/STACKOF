@@ -14,7 +14,8 @@ const QuestionSchema = mongoose.Schema({
         answerBody: String,
         userAnswered: String,
         userId: String,
-        asnweredOn: {type: Date,default:Date.now}
+        asnweredOn: { type: Date, default: Date.now },
+        replies: [{userId: String, userAnswered: String, reply:String}]
     }]
 
 })

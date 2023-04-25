@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from 'react'
+import React,{useState} from 'react'
 import './AskQuestion.css'
 import {useDispatch, useSelector} from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -13,14 +13,14 @@ const AskQuestion = () => {
     const [questionBody, setQuestionBody ] = useState('')
     const [questionTags, setQuestionTags] = useState('')
     // const [noOfQuestions, setNoOfQuestions] = useState(User.result.noOfQuestions)
-    useEffect(() => {
-        const getNoOfQuestions = async() => {
-            // const { res: data } = await axios.post(process.env.REACT_APP_NODE_JS+'plans/getNoOfQuestions')
-            // console.log(data);
-            // setNoOfQuestions(data.noOfQuestions)
-        }
-        getNoOfQuestions()
-    }, [])
+    // useEffect(() => {
+    //     const getNoOfQuestions = async() => {
+    //         const { res: data } = await axios.post(process.env.REACT_APP_NODE_JS+'plans/getNoOfQuestions')
+    //         console.log(data);
+    //         setNoOfQuestions(data.noOfQuestions)
+    //     }
+    //     getNoOfQuestions()
+    // }, [])
     const handleSubmit = (e) => {
         e.preventDefault()
         dispatch(askQuestion({questionTitle,questionBody,questionTags,userPosted: User.result.name, userId: User.result._id }, navigate))

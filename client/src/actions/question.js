@@ -54,6 +54,15 @@ export const deleteAnswer = (id,answerId,noOfAnswers) => async (dispatch) => {
     }
 }
 
+export const addReply = (id,userId,answerId,reply) => async (dispatch) => {
+    try {
+        const {data} = api.addReply(id,userId,answerId,reply)
+        dispatch(fetchAllQuestions())
+    } catch (error) {
+        console.log('src actions question addReply', error)
+    }
+}
+
 export const voteQuestion = (id, value, userId) => async (dispatch) => {
     try {
         const { data } = api.voteQuestion(id, value, userId)

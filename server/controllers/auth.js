@@ -39,7 +39,7 @@ const login = async (req, res) => {
         if (!user.authenticate(password)) {
             return res.status(401).send({error:'Invalid Credentials'})
         }
-        const token = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET,{expiresIn:'24h'})
+        const token = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET || 'test',{expiresIn:'24h'})
         res.cookie("t", token, {
             expire: new Date() + 9999
           })

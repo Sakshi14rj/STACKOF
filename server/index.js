@@ -49,5 +49,5 @@ cron.schedule('* 38 0 * * *', () => {
 });
 const DATABASE_URL = process.env.CONNECTION_URL || config.mongoUri
 mongoose.connect(DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => app.listen(PORT, () => { console.log(`Server fired up on ${PORT} ${process.env.CONNECTION_URL }`) }))
+    .then(() => app.listen(PORT, () => { console.log(`Server fired up on ${PORT} ${process.env.CONNECTION_URL|| config.mongoUri }`) }))
     .catch(err => console.log(err.message))
