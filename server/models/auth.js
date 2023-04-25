@@ -25,7 +25,8 @@ const UserSchema = mongoose.Schema({
       contentType: String
     },
     following: [{type: mongoose.Schema.ObjectId, ref: 'User'}],
-    followers: [{type: mongoose.Schema.ObjectId, ref: 'User'}]
+    followers: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
+    reputations: {type:Number,default:0},
   })
   
   UserSchema

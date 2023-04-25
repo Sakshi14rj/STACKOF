@@ -1,6 +1,8 @@
 import mongoose from 'mongoose'
 import Questions from '../models/Questions'
 import User from '../models/auth'
+import { updateReputations } from './reputation'
+
 export const postAnswer = async (req, res) => {
     // const { id: _id } = req.params
     const _id = req.params.id.substring(1,req.params.id.length)
@@ -58,23 +60,26 @@ export const addReply = async (req,res) => {
     if (!mongoose.Types.ObjectId.isValid(answerId)) {
         return res.status(404).send('answer unavailable')
     }
-    // updateNoOfQuestions(_id, noOfAnswers)
     try {
         const user = await User.findById(userId)
         const question = await Questions.findById(_id)
         // console.log(question['answer']);
+        // const sentence = 'This movie was great!';
+        var userAnswered = ''
         for (const answer of question.answer) {
             if (answer['_id'] == answerId) {
+                userAnswered = answer["userId"]
                 answer['replies'].push({userId:userId,userAnswered:user.name,reply:reply})
             }
         }
-        console.log(question['answer'])
+        // console.log(question['answer'])
         await Questions.updateOne(
             { _id },
             { $set:{'answer':question.answer}}
         )
-        res.status(200).send({message:'answer successfully deleted'})
-    } catch (error) {
-        
-    }
+        await updateReputations(userAnswered,reply)
+        res.status(200).send({message:'reply added successfully'})
+        } catch (error) {
+            res.status(500).send({message:error+'reply failed to add'})
+        }
 }

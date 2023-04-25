@@ -46,8 +46,8 @@ const Answer = ({ ans, question }) => {
                 </div>
                 <div>
                     {!enableReply && <button type='button' onClick={e => setEnableReply(!enableReply)}>Reply</button>}
-                    {enableReply && <input type="text" onChange={e => setReply(e.target.value)} />}
-                    {enableReply && <button type='button' onClick={handleReply}>Add Reply</button>}
+                    {enableReply && <input type="text" autoFocus onChange={e => setReply(e.target.value)} />}
+                    {enableReply && <button type='button'  onClick={handleReply}>Add Reply</button>}
                     {enableReply && <button type='button' onClick={e => setEnableReply(!enableReply)}>Cancel</button>}
                 </div>
                 <div>

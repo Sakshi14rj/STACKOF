@@ -3,6 +3,7 @@ import React from 'react'
 const ProfileBio = ({currentProfile}) => {
   return (
       <div>
+          <h4>Reputations : { currentProfile.reputations}</h4>
         <div>
             {
                 currentProfile.tags ? (
