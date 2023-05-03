@@ -20,7 +20,7 @@ import Profile from './pages/SocialMedia/User/Profile';
 // import PrivateRoute from './api/PrivateRoute';
 
 const Routing = () => {
-  return (
+  return (    
     <Routes>
       <Route path='/' element={<Home />}/>
       <Route path='/Auth' element={<Auth />}/>
