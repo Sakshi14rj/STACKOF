@@ -29,6 +29,7 @@ const Answer = ({ ans, question }) => {
 
     const handleReply = () => {
         if (reply.length === 0) return
+        console.log(reply);
         dispatch(addReply(id, User?.result?._id, ans._id, reply))
         setEnableReply(!enableReply)
     }

@@ -1,0 +1,6561 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <title>Stack Overflow - Clone</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
+import {signUp,logIn} from '../api/index'
+import setCurrentUser from './currentUser'
+
+export const signup = (authData, navigate) => async (dispatch) => {
+    try {
+        const { data } = await signUp(authData)
+        console.log(data);
+        localStorage.setItem('Profile',JSON.stringify({...data}))
+        dispatch({ type: 'AUTH', data })
+        dispatch(setCurrentUser(JSON.parse(localStorage.getItem('Profile'))))
+        navigate('/')
+    } catch (error) {
+        console.log(error,'auth.js actions signup');
+    }
+} 
+export const login = (authData, navigate) => async (dispatch) => {
+    try {
+        const { data } = await logIn(authData)
+        dispatch({ type: 'AUTH', data })
+        dispatch(setCurrentUser(JSON.parse(localStorage.getItem('Profile'))))
+        navigate('/')
+    } catch (error) {
+        console.log(error,'auth.js actions login');
+    }
+}  
+const setCurrentUser = (data) => {
+  return {
+      type: 'FETCH_CURRENT_USER',
+      payload: data
+  }
+}
+export default setCurrentUser
+/* eslint-disable no-unused-vars */
+import * as api from '../api'
+
+export const askQuestion = (questionData, navigate) => async (dispatch) => {
+    try {
+        const { data } = await api.postQuestion(questionData)
+        console.log(data);
+        dispatch({ type: "POST_QUESTION", payload: data })
+        dispatch(fetchAllQuestions())
+        navigate('/')
+    } catch (error) {
+        console.log('src actions question askQuestion',error)
+    }
+    
+}
+
+export const fetchAllQuestions = () => async(dispatch) =>{
+    try {
+        const { data } = await api.getAllQuestions()
+        dispatch({type: 'FETCH_ALL_QUESTIONS',payload:data})
+    } catch (error) {
+        console.log('src actions question fetchAllQuestions',error)
+        
+    }
+}
+
+export const postAnswer = (answerData) => async (dispatch) => {
+    try {
+        const { id, noOfAnswers, answerBody, userAnswered,userId } = answerData
+        const {data} = await api.postAnswer(id, noOfAnswers, answerBody, userAnswered,userId)
+        dispatch({ type: 'POST_ANSWER', payload: data })
+        dispatch(fetchAllQuestions())
+    } catch (error) {
+        console.log('src actions question postAnswer',error)
+    }
+} 
+
+export const deleteQuestion = (id, navigate) => async (dispatch) => {
+    try {
+        const {data} = api.deleteQuestion(id)
+        dispatch(fetchAllQuestions())
+        navigate('/')
+    } catch (error) {
+        console.log('src actions question deleteQuestion',error)
+    }
+}
+
+export const deleteAnswer = (id,answerId,noOfAnswers) => async (dispatch) => {
+    try {
+        const {data} = api.deleteAnswer(id,answerId,noOfAnswers)
+        dispatch(fetchAllQuestions())
+    } catch (error) {
+        console.log('src actions question deleteAnswer', error)
+    }
+}
+
+export const addReply = (id,userId,answerId,reply) => async (dispatch) => {
+    try {
+        const {data} = api.addReply(id,userId,answerId,reply)
+        dispatch(fetchAllQuestions())
+    } catch (error) {
+        console.log('src actions question addReply', error)
+    }
+}
+
+export const voteQuestion = (id, value, userId) => async (dispatch) => {
+    try {
+        const { data } = api.voteQuestion(id, value, userId)
+        dispatch(fetchAllQuestions())
+    } catch (error) {
+        console.log('src actions question voteQuestion',error)
+    }
+}
+import * as api from '../api'
+
+export const searchStackOverflow = async(query) =>{
+    try {
+        // console.log('client src actions searchStackOverflow',query);
+        const { data } = await api.searchStackOverflow(query)
+        // console.log('client src actions searchStackOverflow',data);
+        return data
+    } catch (error) {
+        console.log('client src actions searchStackOverflow searchStackOverflow',error)
+    }
+}
+import * as api from '../api/index'
+
+export const fetchAllUsers = () => async (dispatch) => {
+    try {
+        const { data } = await api.fetchAllUsers()
+        dispatch({ type: 'FETCH_USERS', payload: data })
+    } catch (error) {
+        console.log('src actions users fetchAllUsers',error)
+    }
+}
+
+export const updateProfile = (id, updateData) => async (dispatch) => {
+    try {
+        const { data } = await api.updateProfile(id, updateData)
+        dispatch({type:'UPDATE_CURRENT_USER',payload:data})
+    } catch (error) {
+        console.log('src actions users updateProfile',error)
+    }
+}
+import * as api from '../api'
+
+export const generateOTP = async(email) =>{
+    try {
+        return await (await api.generateOTP(email)).data.message
+    } catch (error) {
+        console.log('src actions verifyOTP generateOTP',error)
+    }
+}
+
+export const verifyOTP = async (email,recvOTP) => {
+    try {
+        return await (await api.verifyOTP(email,recvOTP)).data.message
+    } catch (error) {
+        console.log('src actions verifyOTP verifyOTP',error)
+    }
+}
+const create = async (params, credentials, post) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'posts/new/'+ params.userId, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      },
+      body: post
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+const listByUser = async (params, credentials) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'posts/by/'+ params.userId, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      }
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+const listNewsFeed = async (params, credentials, signal) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'posts/feed/'+ params.userId, {
+      method: 'GET',
+      signal: signal,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      }
+    })    
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+const remove = async (params, credentials) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'posts/' + params.postId, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      }
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+
+const like = async (params, credentials, postId) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'posts/like/', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      },
+      body: JSON.stringify({userId:params.userId, postId: postId})
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+
+const unlike = async (params, credentials, postId) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'posts/unlike/', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      },
+      body: JSON.stringify({userId:params.userId, postId: postId})
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+
+const comment = async (params, credentials, postId, comment) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'posts/comment/', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      },
+      body: JSON.stringify({userId:params.userId, postId: postId, comment: comment})
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+
+const uncomment = async (params, credentials, postId, comment) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'posts/uncomment/', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      },
+      body: JSON.stringify({userId:params.userId, postId: postId, comment: comment})
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+
+export {
+  listNewsFeed,
+  listByUser,
+  create,
+  remove,
+  like,
+  unlike,
+  comment,
+  uncomment
+}
+const create = async (user) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'users/create', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(user)
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+const list = async (signal) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'users/create', {
+      method: 'GET',
+      signal: signal
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+const read = async (params, credentials, signal) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'users/' + params.userId, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      }
+  })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+const update = async (params, credentials, user) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'users/' + params.userId, {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      },
+      body: user
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+const remove = async (params, credentials) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'users/' + params.userId, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      }
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+const follow = async (params, credentials, followId) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'users/follow/', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      },
+      body: JSON.stringify({userId:params.userId, followId: followId})
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+const unfollow = async (params, credentials, unfollowId) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'users/unfollow/', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      },
+      body: JSON.stringify({userId:params.userId, unfollowId: unfollowId})
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+const findPeople = async (params, credentials, signal) => {
+  try {
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'users/findpeople/' + params.userId, {
+      method: 'GET',
+      signal: signal,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      }
+    })    
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+export {
+  create,
+  list,
+  read,
+  update,
+  remove,
+  follow,
+  unfollow,
+  findPeople
+}
+const signout = async () => {
+  try {
+    localStorage.removeItem('Profile')
+    let response = await fetch(process.env.REACT_APP_NODE_JS+'users/signout/', { method: 'GET' })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+const auth = {
+  isAuthenticated() {
+    if (typeof window == "undefined")
+      return false
+    if (localStorage.getItem('Profile'))
+      return JSON.parse(localStorage.getItem('Profile'))
+    else
+      return false
+  },
+  authenticate(jwt, cb) {
+    if (typeof window !== "undefined")
+      localStorage.setItem('Profile', JSON.stringify(jwt))
+    cb()
+  },
+  clearJWT(cb) {
+    if (typeof window !== "undefined")
+      localStorage.removeItem('Profile')
+    cb()
+    //optional
+    signout().then((data) => {
+      document.cookie = "t=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+    })
+  }
+}
+
+export default auth
+import axios from 'axios'
+
+const API = axios.create({ baseURL: process.env.REACT_APP_NODE_JS })
+
+API.interceptors.request.use((req) => {
+    if (localStorage.getItem('Profile')) {
+        req.headers.authorization = `Bearer ${JSON.parse(localStorage.getItem('Profile')).token}`
+    }
+    return req
+})
+
+export const logIn = (authData) => API.post('/users/login', authData)
+
+
+
+export const signUp = (authData) => API.post('/users/signup', authData)
+
+
+
+export const postQuestion = (questionData) => API.post('/questions/Ask', questionData)
+export const getAllQuestions = () => API.get('/questions/get')
+export const deleteQuestion = (id) => API.delete(`/questions/delete/:${id}`)
+export const voteQuestion = (id,value, userId) => API.patch(`/questions/vote/${id}`,{value,userId})
+
+export const postAnswer = (id, noOfAnswers, answerBody, userAnswered, userId) => API.patch(`/answer/post/:${id}`, { noOfAnswers, answerBody, userAnswered, userId })
+export const deleteAnswer = (id,answerId,noOfAnswers) => API.patch(`/answer/delete/:${id}`,{answerId,noOfAnswers})
+export const addReply = (id,userId,answerId,reply) => API.patch(`/answer/reply/:${id}`,{userId,answerId,reply})
+
+export const fetchAllUsers = () => API.get('/users/getAllUsers')
+export const updateProfile = (id, updateData) => API.patch(`/users/update/${id}`, updateData)
+export const generateOTP = (email) => API.post('/verify/email',{email})
+export const verifyOTP = (email,recvOTP) => API.post('/verify/otp',{email,recvOTP})
+export const searchStackOverflow = (question) => API.post('/search/stackoverflow',{question})
+import React from 'react'
+
+const Avatar = ({
+  children,
+  backgroundColor,
+  py,
+  px,
+  color,
+  borderRadius,
+  fontSize,
+  textAlign,
+  cursor
+  }) => {
+  const style = {
+    backgroundColor,
+    padding:`${py} ${px}`,
+    color:color || 'black',
+    borderRadius,
+    fontSize,
+    textAlign,
+    cursor: cursor || null,
+    textDecoration:'none'
+  }
+  return (
+    <div style={style}>
+      {children}
+    </div>
+)
+}
+
+export default Avatar
+import React from 'react'
+
+const Button = () => {
+  return (
+    <div>Button</div>
+  )
+}
+
+export default Button
+import React, { useState } from "react";
+import { styles } from "../styles.js";
+import { LoadingOutlined } from "@ant-design/icons";
+import AvatarChatbot from "../AvatarChatbot.jsx";
+import { generateOTP, verifyOTP } from "../../../actions/verifyOTP.js";
+// import axios from 'axios'
+
+const EmailForm = (props) => {
+  const [email, setEmail] = useState("");
+  const [loading,setLoading] = useState(false);
+  const [otp, setOtp] = useState(null);
+  const [otpStatus, setOtpStatus] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true)  
+    setOtpStatus("Sending...");
+    setOtpStatus(await generateOTP(email));
+    setLoading(false)  
+  };
+
+  const verify = async (e) => {
+    e.preventDefault();
+    const bool = await verifyOTP(email, otp)
+    console.log(typeof(bool))  
+    if (bool) {
+      props.setIsverified();
+    }
+  };
+  return (
+    <div
+      style={{
+        ...styles.emailFormWindow,
+        ...{
+          height: props.visible ? "100%" : "0%",
+          opacity: props.visible ? "1" : "0",
+        },
+      }}
+    >
+      <div style={{ height: "0px" }}>
+        <div style={styles.stripe} />
+      </div>
+      <div
+        className="transition-5"
+        style={{
+          ...styles.loadingDiv,
+          ...{
+            zIndex: loading ? "10" : "-1",
+            opacity: loading ? "0.33" : "0",
+          },
+        }}
+      />
+          {
+            loading
+                    &&
+              <LoadingOutlined
+                className="transition-5"
+                style={{
+                ...styles.loadingIcon,
+                ...{
+                    zIndex: loading ? "10" : "-1",
+                    opacity: loading ? "1" : "0",
+                    fontSize: "82px",
+                    top: "calc(50% - 41px)",
+                    left: "calc(50% - 41px)",
+                },
+            }}
+            />
+          }
+      <div
+        style={{
+          position: "absolute",
+          height: "100%",
+          width: "100%",
+          textAlign: "center",
+        }}
+      >
+        <AvatarChatbot
+          style={{
+            position: "relative",
+            left: "calc(50% - 44px)",
+            top: "10%",
+          }}
+        />
+
+        <div style={styles.topText}>
+          Welcome to our <br /> ChatBot
+        </div>
+
+        <form
+          onSubmit={(e) => handleSubmit(e)}
+          style={{ position: "relative", width: "100%", top: "19.75%" }}
+        >
+          <input
+            style={styles.emailInput}
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            placeholder="Enter Email and Click Enter"
+          />
+        </form>
+        <div style={styles.bottomText}>
+          Type your email &  <br /> Press Enter to get OTP <br /> {otpStatus} <br /> Enter OTP Below &  Press Enter
+        </div>
+        <form
+          onSubmit={(e) => verify(e)}
+          style={{ position: "relative", width: "100%", top: "39.75%" }}
+        >
+          <input
+            style={styles.emailInput}
+            onChange={(e) => setOtp(e.target.value)}
+            placeholder="Enter OTP and Click Enter"
+          />
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default EmailForm;
+// const EmailForm = props => {
+//     const [email, setEmail] = useState('')
+//     const [loading, setLoading] = useState(false)
+
+//     function getOrCreateUser(callback) {
+//         axios.put(
+//             'https://api.chatengine.io/users/',
+//             {
+//                 "username": email,
+//                 "secret": email,
+//                 "email": email
+//             },
+//             {headers: {"Private-key": process.env.REACT_APP_CE_PRIVATE_KEY }}
+//         ).then(r=>callback(r.data))
+//     }
+//     function getOrCreateChat(callback) {
+//         axios.put(
+//             'https://api.chatengine.io/chats/',
+//             {
+//                 "usernames": ["Namachu", email],
+//                 "is_direct_chat": true
+//             },
+//             {headers: {"Private-key": process.env.REACT_APP_CE_PRIVATE_KEY }}
+//         ).then(r=>callback(r.data))
+//     }
+
+//     const handleSubmit = (e) => {
+//         e.preventDefault()
+//         setLoading(true)
+//         console.log('emailing.....');
+//         getOrCreateUser(
+//             user =>{
+//                 props.setUser(user)
+//                 getOrCreateChat(
+//                     chat=>
+//                          props.setChat(chat)
+//                 )
+//             })
+//     }
+
+//   return (
+//     <div
+//         style={{
+//             ...styles.emailFormWindow,
+//             ...{
+//                 height: props.visible ? '100%' : '0%',
+//                 opacity: props.visible ? '1': '0'
+//             }
+//         }}
+//     >
+//         <div style={{height: '0px'}}>
+//             <div style={styles.stripe}/>
+//         </div>
+//         <div
+//             className='transition-5'
+//               style={{
+//                 ...styles.loadingDiv,
+//                 ...{
+//                     zIndex: loading ? '10': '-1',
+//                     opacity: loading ? '0.33': '0'
+//                 }
+//             }}
+//         />
+//         <LoadingOutlined
+//             className='transition-5'
+//             style={{
+//                 ...styles.loadingIcon,
+//                 ...{
+//                     zIndex: loading ? '10': '-1',
+//                     opacity: loading ? '1' : '0',
+//                     fontSize: '82px',
+//                     top: 'calc(50% - 41px)',
+//                     left: 'calc(50% - 41px)',
+//                 }
+//             }}
+//         />
+//         <div style={{position:'absolute', height:'100%', width:'100%', textAlign:'center'}}>
+//             <AvatarChatbot
+//                 style={{
+//                     position: 'relative',
+//                     left: 'calc(50% - 44px)',
+//                     top:  '10%'
+//                 }}
+//             />
+
+//             <div style={styles.topText}>
+//                 Welcome to our <br /> ChatBot
+//             </div>
+
+//             <form
+//                 onSubmit={e => handleSubmit(e)}
+//                 style={{position: 'relative', width: '100%', top: '19.75%'}}
+//             >
+//                 <input
+//                     style={styles.emailInput}
+//                     onChange={e => setEmail(e.target.value)}
+//                     palceholder='Your Email'
+//                 />
+//             </form>
+//             <div style={styles.bottomText}>
+//                 Enter your email <br /> to get Verified
+//             </div>
+//         </div>
+//     </div>
+//   )
+// }
+import React, { useState } from 'react'
+import { styles } from './styles.js'
+
+const AvatarChatbot = props => {
+    const [hovered, setHovered] = useState(false)
+
+  return (
+      <div style = {props.style}>
+          <div
+            className='transition-3'
+            style={{
+                ...styles.avatarHello,
+                ...{opacity: hovered ? '1':'0'}
+              }}  
+          >Hey I am Namachu!
+          </div>
+          <div
+            className='transition-3'
+            onMouseEnter={()=> setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            onClick={ ()=> props.onClick && props.onClick()}  
+            style={{
+                ...styles.chatWithMeButton,
+                ...{border: hovered ? '4px solid #f9f0ff' : '4px solid #7a39e0'} 
+            }} 
+          /> 
+
+      </div>
+  )
+}
+
+export default AvatarChatbot
+* {
+  font-family: Avenir !important;
+}
+
+.ce-my-message-bubble {
+  background-color: #7a39e0 !important;
+}
+
+.ce-chat-title-text {
+  color: #7a39e0 !important;
+}
+
+.ce-chat-subtitle-text {
+  color: #7a39e0 !important;
+  font-weight: 600;
+}
+
+#ce-send-message-button {
+  position: relative !important;
+  bottom: 2px !important;
+  left: 1px !important;
+  background-color: #7a39e0 !important;
+}
+
+.ce-my-message-timestamp {
+  color: #7a39e0 !important;
+}
+
+.transition-3 {
+  transition: all 0.33s ease;
+  -webkit-transition: all 0.33s ease;
+  -moz-transition: all 0.33s ease;
+}
+
+.transition-5 {
+  transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+}
+import React, { useState, useRef, useEffect } from 'react'
+// import  { styles } from './styles.js'
+import AvatarChatbot from './AvatarChatbot'
+import SupportWindow from './SupportWindow.jsx'
+
+const Chatbot = () => {
+    const ref = useRef(null)
+    const [visible, setVisible] = useState(false)
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (ref.current && !ref.current.contains(event.target)) {
+                setVisible(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown',handleClickOutside)
+        } 
+    }, [ref, visible])
+  return (
+      <div ref={ref}>
+          <SupportWindow
+              visible={visible}
+          />
+          <AvatarChatbot
+              onClick={ ()=> setVisible(!visible) }
+              style={{
+                position: 'fixed',
+                bottom: '24px',
+                right: '24px'
+            }}
+          />
+      </div>
+  )
+}
+
+export default Chatbot
+import React, { useEffect, useState } from 'react';
+import ChatBot from 'react-simple-chatbot';
+import { searchStackOverflow } from '../../actions/searchStackOverflow'
+
+const SearchStackOverflow = props => {
+  const [answers, setAnswers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const {triggerNextStep} = props
+  const { steps } = props;
+  const search = steps.search.value;
+
+  useEffect(() =>{
+    searchStackOverflow(search)
+      .then(res => {
+        setAnswers(res.message.slice(0,2))
+        setLoading(false)
+      })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
+  return (
+    <div className="" style={{
+            width: '420px',
+            maxWidth: 'calc(100% - 18px)',
+            maxHeight: 'calc(100% - 48px)',
+            overflowWrap: 'break-word',  
+            wordWrap: 'break-word', 
+            wordBreak: 'break-word',
+    }}>
+      <h3>{ loading && "Searching....."}</h3>
+      <h3 style={{color:'#7a39e0', fontWeight:'1900'}}>{ !loading && "Here are the top 2 Answers from Stack Overflow"}</h3>
+      {
+          answers.map(ans => (
+            <>
+              <h3>{ans.title}</h3>
+              <p>{ans.body}</p>
+              <h4>Answer</h4>
+              <p>{ans.answers[0]}</p>
+            </>
+          ))
+      }
+      { !loading && <button button onClick={() => triggerNextStep()}> Search Again </button>}
+      </div>
+  )
+}
+
+const SearchBot = (props) => (
+  <ChatBot
+  className='transition-5'
+  style={{
+    height: props.visible? '100%' : '0%',
+    zIndex: props.visible ? '100' : '0',
+    width: '100%',
+    backgroundColor:'white'
+  }}
+    steps={[
+      {
+        id: '1',
+        message: 'Ask me your programming related questions. (Ex:What is python list ) You can even ask me the errors you face',
+        trigger: 'search',
+      },
+      {
+        id: 'search',
+        user: true,
+        trigger: '3',
+      },
+      {
+        id: '3',
+        component: <SearchStackOverflow />,
+        waitAction: true,
+        trigger: '1',
+      },
+    ]}
+  />
+);
+
+export default SearchBot;
+import chatbotimg from '../../assets/chatbot.jpg'
+export const styles = {
+    chatWithMeButton: {
+        cursor: 'pointer',
+        boxShadow: '0px 0px 16px 6px rgba(0, 0, 0, 0.33)',
+        // Border
+        borderRadius: '50%',
+        // Background 
+        backgroundImage: `url(${chatbotimg})`, 
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundSize: '84px',
+        // Size
+        width: '84px',
+        height: '84px',
+    },
+    avatarHello: { 
+        // Position
+        position: 'absolute', 
+        left: 'calc(-100% - 44px - 28px)', 
+        top: 'calc(50% - 24px)', 
+        // Layering
+        zIndex: '10000',
+        boxShadow: '0px 0px 16px 6px rgba(0, 0, 0, 0.33)',
+        // Border
+        padding: '12px 12px 12px 16px',
+        borderRadius: '24px', 
+        // Color
+        backgroundColor: '#f9f0ff',
+        color: 'black',
+    },
+    supportWindow: {
+        // Position
+        position: 'fixed',
+        bottom: '116px',
+        right: '24px',
+        // Size
+        width: '420px',
+        height: '530px',
+        maxWidth: 'calc(100% - 48px)',
+        maxHeight: 'calc(100% - 48px)',
+        backgroundColor: 'white',
+        // Border
+        borderRadius: '12px',
+        border: `2px solid #7a39e0`,
+        overflow: 'hidden',
+        // Shadow
+        boxShadow: '0px 0px 16px 6px rgba(0, 0, 0, 0.33)',
+    },
+    emailFormWindow: { 
+        width: '100%',  
+        overflow: 'hidden',
+        transition: "all 0.5s ease",
+        WebkitTransition: "all 0.5s ease",
+        MozTransition: "all 0.5s ease",
+    },
+    stripe: {
+        position: 'relative',
+        top: '-45px',
+        width: '100%',
+        height: '308px',
+        backgroundColor: '#7a39e0',
+        transform: 'skewY(-12deg)',
+    },
+    topText: { 
+        position: 'relative',
+        width: '100%', 
+        top: '15%', 
+        color: 'white', 
+        fontSize: '24px', 
+        fontWeight: '600',
+    },
+    emailInput: { 
+        width: '66%',
+        textAlign: 'center',
+        outline: 'none',
+        padding: '12px',
+        borderRadius: '12px',
+        border: '2px solid #7a39e0',
+    },
+    bottomText: { 
+        position: 'absolute', 
+        width: '100%', 
+        top: '58%', 
+        color: '#7a39e0', 
+        fontSize: '18px', 
+        fontWeight: '500' 
+    },
+    loadingDiv: { 
+        position: 'absolute', 
+        height: '100%', 
+        width: '100%', 
+        textAlign: 'center', 
+        backgroundColor: 'white',
+    },
+    loadingIcon: { 
+        color: '#7a39e0', 
+        position: 'absolute', 
+        top: 'calc(50% - 51px)', 
+        left: 'calc(50% - 51px)',  
+        fontWeight: '600',
+    },
+    chatEngineWindow: {
+        width: '100%',  
+        backgroundColor: '#fff',
+    }
+}
+import React, { useState } from 'react'
+import { styles } from './styles.js'
+import EmailForm from './OTPVerification/EmailForm.jsx'
+// import ChatRoom from './ChatRoom.jsx'
+import SearchBot from './SearchBot.jsx'
+import './Bot.css'
+const SupportWindow = props => {
+    // const [user, setUser] = useState(false)
+    // const [chat, setChat] = useState(false)
+    const [isverified, setIsverified] = useState(false)
+  return (
+      <div
+          className='transition-5'
+          style={{
+            ...styles.supportWindow,
+            ...{display: props.visible ? '':'none'}
+          }}
+    >
+    { !isverified ? 
+      <EmailForm  
+      visible={!isverified}
+      setIsverified={ () => setIsverified(true)}
+      /> :
+      <SearchBot visible={isverified} />
+    }
+    </div>
+  )
+}
+
+export default SupportWindow
+
+
+// setUser={user => setUser(user)}
+// setChat={chat => setChat(chat)}
+// visible={chat === false}
+// visible={user === false || chat === false}
+
+// visible={user !== false && chat !== false}
+// visible={chat !== false}
+// chat={chat}
+// user={user}
+
+// {/* <ChatRoom
+//           visible={user !==false && chat!==false}
+//           chat={chat}
+//           user={user}
+//       /> */}
+.main-bar{
+  width: cacl(100% - 250px - 24px);
+  float: left;
+  margin: 25px 0px;
+  padding:0;
+}
+
+.main-bar-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main-bar-header h1{
+  font-weight: 400;
+}
+
+.main-bar-header .ask-btn{
+  padding: 10px 10px;
+  border-radius: 4px;
+  background-color: #009dff;
+  color: white;
+  border: none;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.main-bar-header .ask-btn:hover{
+  background-color: #0086db;
+}
+
+.display-question-container{
+  min-height:80;
+  width:100%;
+  display: flex;
+  align-items: center;
+  background-color: #fdf7e2;
+  border-bottom: solid 1px #edeff0;
+
+}
+
+.display-question-container .display-votes-ans{
+  padding:20px;
+}
+@media (max-width:400px) {
+  .display-question-container .display-votes-ans{
+      padding:10px;
+  }
+}
+
+.display-question-container .display-votes-ans p{
+  margin: 0%;
+  text-align: center;
+}
+
+.display-question-details{
+  flex-grow: 1;
+  padding: 0px 20px;
+}
+
+.question-title-link{
+  text-decoration: none;
+  color:#037ecb;
+  transition: 0.3s;
+}
+
+.question-title-link:hover{
+  color:#009dff
+}
+
+.display-question-details p{
+  padding:4px;
+  margin:0%;
+}
+
+.display-tags-time .display-tags{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.display-tags-time{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.display-tags-time .display-tags p{
+  margin:2px;
+  padding:4px;
+  font-size: 13px;
+  background-color: #edeff0;
+  color:#39739d;
+}
+
+.display-tags-time .display-time{
+  font-size:13px;
+}
+import React from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import './HomeMainbar.css'
+import QuestionList from './QuestionList'
+import {useSelector} from 'react-redux'
+
+const HomeMainbar = () => {
+  //  var questionsList = [{ 
+  //       _id: 1,
+  //       upVotes: 3,
+  //       downVotes: 2,
+  //       noOfAnswers: 2,
+  //       questionTitle: "What is a function?",
+  //       questionBody: "It meant to be",
+  //       questionTags: ["java", "node js", "react js", "mongo db", "express js"],
+  //       userPosted: "mano",
+  //       userId: 1,
+  //       askedOn: "jan 1",
+  //       answer: [{
+  //           answerBody: "Answer",
+  //           userAnswered: 'kumar',
+  //           answeredOn: "jan 2",
+  //           userId: 2,
+  //       }]
+  //   },{
+  //       _id: 2,
+  //       upVotes: 3,
+  //       downVotes: 2,
+  //       noOfAnswers: 0,
+  //       questionTitle: "What is a function?",
+  //       questionBody: "It meant to be",
+  //       questionTags: ["javascript", "R", "python"],
+  //       userPosted: "mano",
+  //       askedOn: "jan 1",
+  //       userId: 1,
+  //       answer: [{
+  //           answerBody: "Answer",
+  //           userAnswered: 'kumar',
+  //           answeredOn: "jan 2",
+  //           userId: 2,
+  //       }]
+  //   },{
+  //       _id: 3,
+  //       upVotes: 3,
+  //       downVotes: 2,
+  //       noOfAnswers: 0,
+  //       questionTitle: "What is a function?",
+  //       questionBody: "It meant to be",
+  //       questionTags: ["javascript", "R", "python"],
+  //       userPosted: "mano",
+  //       askedOn: "jan 1",
+  //       userId: 1,
+  //       answer: [{
+  //           answerBody: "Answer",
+  //           userAnswered: 'kumar',
+  //           answeredOn: "jan 2",
+  //           userId: 2,
+  //       }]
+  //    }]
+  
+  const questionsList = useSelector(state => state.questionReducer)
+  
+  const location = useLocation()
+  var user = useSelector((state)=>(state.currentUserReducer))
+  const navigate = useNavigate()
+
+  const checkAuth = () => {
+    if(user===null){
+        alert('Login or Signup to ask a question')
+        navigate('/Auth')
+    }else{
+        navigate('/AskQuestion')
+    }
+}
+  return (
+    <div className='main-bar'>
+      <div className='main-bar-header'>
+        {
+          location.pathname === '/' ? <h1>Top Questions</h1> : <h1>All Questions</h1>
+        }
+        <button onClick={checkAuth} className='ask-btn'>Ask Question</button>
+      </div>
+      <div>
+        {
+          questionsList.data === null ?
+            <h1>Loading...</h1> :
+            <>
+              <p> {questionsList.data.length} Questions </p>
+              <QuestionList questionsList={ questionsList.data } />
+            </>
+        }
+      </div>
+    </div>
+  )
+}
+
+export default HomeMainbar
+import React from "react";
+import Questions from './Questions'
+
+const QuestionList = ({questionsList}) => {
+  return (
+    <>
+        {
+            questionsList.map((question) => (
+                <Questions question={question} key={question} />
+            ))
+        }
+    </>
+  );
+};
+
+export default QuestionList;
+import React from 'react'
+import { Link } from 'react-router-dom'
+import moment from 'moment'
+const Questions = ({question}) => {
+  return (
+    <div className='display-question-container'>
+        <div className='display-votes-ans'>
+            <p>{ question.upVote.length - question.downVote.length}</p>      
+            <p>Votes</p>      
+        </div>
+        <div className='display-votes-ans'>
+            <p>{ question.noOfAnswers}</p>      
+            <p>Answers</p>      
+        </div>
+        <div className='display-question-details'>
+            <Link to={`/Questions/${question._id}`} className='question-title-link'>{ question.questionTitle }</Link>  
+            <div className='display-tags-time'>
+                <div className='display-tags'>
+                    {
+                        question.questionTags.map(tag => (
+                            <p key={tag}>{ tag }</p>
+                        ))
+                    }
+                </div>
+                <p className='display-time'>
+                    asked { moment(question.askedOn).fromNow() }, by: { question.userPosted}
+                </p>
+            </div>
+        </div>  
+    </div>
+  )
+}
+
+export default Questions
+.left-sidebar{
+  width: 164px;
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+  transition: box-shadow ease-in-out 0.1s, transform ease-in-out 0.1s;
+  transform:translateZ(0);
+  box-sizing:border-box;
+  font-size: 13px;
+}
+
+.side-nav{
+  height:auto;
+  max-width:  100%;
+  position:sticky;
+  margin: 50px 0px;
+  padding:20px 0px;
+}
+
+.side-nav-div{
+  padding:10px 0px;
+}
+
+.side-nav-div div{
+  padding-left:2px;
+}
+
+.side-nav-links{
+  text-decoration:none;
+  color: #3a3a3a;
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+  /* align-items: center; */
+  /* justify-content: flex-start; */
+  padding-left: 5px;
+  transition:0.2s;
+}
+
+.side-nav-links:hover{
+  color:black;
+}
+
+.active{
+  font-weight: bolder;
+  color:black;
+  background-color: rgb(225, 225, 225);
+  border-right: solid 3px #ef8236;
+}
+import React from 'react'
+import './LeftSidebar.css'
+import { NavLink } from 'react-router-dom'
+// import Globe from '../../assets/Globe.svg'
+
+const LeftSidebar = () => {
+  return (
+    <div className='left-sidebar'>
+      <nav className='side-nav'>
+        <NavLink to='/' className='side-nav-links' activeClassName='active'>
+          <p>Home</p>
+        </NavLink> 
+        <div className='side-nav-div'>
+          <div><p>PUBLIC</p></div>
+          <NavLink to='/Questions' className='side-nav-links' activeClassName='active'>
+            {/* <img src={Globe} alt="Globe" /> */}
+            <p style={{paddingLeft:'0px'}}>Questions</p>
+          </NavLink>         
+          <NavLink to='/Tags' className='side-nav-links' activeClassName='active' style={{paddingLeft:'5px'}}>
+            <p>Tags</p>
+          </NavLink>         
+          <NavLink to='/Users' className='side-nav-links' activeClassName='active' style={{paddingLeft:'5px'}}>
+            <p>Users</p>
+          </NavLink>         
+          <NavLink to='/SocialMedia' className='side-nav-links' activeClassName='active' style={{paddingLeft:'5px'}}>
+            <p>Social Media</p>
+          </NavLink>         
+          <NavLink to='/Plans' className='side-nav-links' activeClassName='active' style={{paddingLeft:'5px'}}>
+            <p>Plans</p>
+          </NavLink>         
+        </div>
+      </nav>
+    </div>
+  )
+}
+
+export default LeftSidebar
+
+.main-nav {
+  min-height: 50px;
+  width: 100%; 
+  margin: 0% auto;
+  border-top: solid 3px #ef8236;
+  box-shadow: 0px 1px 5px #00000033;
+  position: fixed;
+  z-index: 5;
+  top:0%;
+  left:0%;
+  background-color:#f8f9f9;
+  display: flex;
+  /* flex-wrap: wrap; */
+  justify-content: space-around;
+  /* justify-content: center; */
+  align-items: center;
+}
+@media (max-width:400px) {
+  .nav-logo{
+      display: none;
+      /* width:100%; */
+  }
+}
+.navbar{
+  height:100%;
+  min-width:85%;
+  display:flex;
+  flex-direction:row;
+  flex-wrap:wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-logo{
+  padding: 5px 5px;
+}
+
+.nav-item{
+  margin: 0px 3px;
+  font-size: small;
+  font-weight: 500;
+  text-decoration: none;
+  color: rgb(69,69,69);
+  transition: 0.2s;
+}
+
+.nav-btn{
+  cursor: pointer;
+  border-radius: 20px;
+  padding:10px 3px;
+}
+
+.nav-item:hover{
+  background-color: rgb(255, 102, 0);
+}
+
+.navbar form{
+  /* flex-grow: 1; */
+  padding: 0px 10px;
+  position: relative;
+}
+
+.navbar form .search-icon {
+  position: absolute ;
+  left: 15px;
+  top: 6px;
+}
+
+.navbar form input{
+  /* min-width: 10%; */
+  margin:0;
+  padding: 8px 10px 8px 25px;
+  font-size: 13px;
+  border: solid 1px #0000003e;
+  border-radius: 3px;
+}
+
+.nav-links{
+  padding: 7px 3px;
+  border: solid 1px blue;
+  border-radius: 3px;
+  background-color: #e7f8fe;
+  cursor:pointer;
+}
+
+.nav-links:hover{
+  background-color: #d3e4eb;
+}
+import React,{useEffect} from 'react'
+import { Link } from 'react-router-dom'
+import logo from '../../assets/logo.png'
+import Avatar from '../../components/Avatar/Avatar'
+import search from '../../assets/search-solid.svg'
+import './Navbar.css'
+import { Button } from '@mui/material';
+import {useSelector,useDispatch} from 'react-redux'
+import setCurrentUser from '../../actions/currentUser'
+import {useNavigate} from 'react-router-dom'
+import decode from 'jwt-decode'
+
+const Navbar = () => {
+
+    var User = useSelector((state)=>(state.currentUserReducer))
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+        dispatch({ type: 'LOGOUT' })
+        navigate('/')
+        dispatch(setCurrentUser(null))
+    }
+
+    useEffect(() => {
+        const token = User?.token
+        if (token) {
+            const decodeToken = decode(token)
+            if (decodeToken.exp * 1000 < new Date().getTime()) {
+                handleLogout()
+            }
+        }
+        dispatch(setCurrentUser(JSON.parse(localStorage.getItem('Profile'))))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch])
+
+    return (
+        <nav className='main-nav'>
+            <div className='navbar'>
+                <Link to='/' className='nav-item nav-logo'>
+                    <img src={logo} alt="logo" />
+                </Link>
+                
+                <Link to='/' className='nav-item nav-btn'>About</Link>
+                
+                <Link to='/' className='nav-item nav-btn'>Products</Link>
+                
+                <Link to='/' className='nav-item nav-btn'>For Teams</Link>
+                
+                <form action="">
+                    <input type="text" name="" id="" placeholder='Search...' />
+                    {/* <SearchSharpIcon className='search-icon' fontSize='medium' /> */}
+                    <img src={ search } alt="search" width="18" className='search-icon'/>
+                </form> 
+                {/* <div> */}
+                    
+                {User === null ?
+                    <Link to='/Auth' className='nav-item nav-links'>Log in</Link>
+                        :
+                        <>
+                        <Avatar
+                            backgroundColor='#009dff'
+                            px='10px' py='5px'
+                            borderRadius='50%'
+                            color='white'
+                        >
+                            <Link to={`/Users/${User.result._id}`} style={{color:'white',textDecoration:'none'}}>
+                                {User.result.name.charAt(0).toUpperCase()}
+                            </Link>
+                        </Avatar>
+                        <Button onClick={handleLogout}>Log out</Button>
+                    </> 
+                    }
+                    {/* </div> */}
+            </div>  
+        </nav>
+    )
+}
+
+export default Navbar
+.right-sidebar{
+  float: right;
+  width: 250px;
+  margin: 40px 0px 15px 24px;
+  font-size: 15px;
+}
+@media(max-width:772px){
+  .right-sidebar{
+      display:none;
+  }
+}
+
+.widget{
+  margin-top: 10px;
+  box-shadow: 3px 3px 10px rgb(0 0 0 / 5%),
+  -3px -3px 10px rgb(0 0 0 / 5%);
+}
+
+.widget h4{
+  background-color: #fbf3d5;
+  margin: 0%;
+  padding: 15px;
+  border: solid 1px #f1e5bc;
+  font-size: 13px;
+}
+
+.right-sidebar-div-1{
+  background-color: #fdf7e2;
+  padding: 15px;
+  border: solid 1px #f1e5bc;
+}
+
+.right-sidebar-div-1 .right-sidebar-div-2{
+  display: flex;
+  align-items: flex-start;
+  /* justify-content: space-evenly; */
+}
+
+.right-sidebar-div-1 .right-sidebar-div-2 p{
+  padding-left: 10px;
+  margin-top: 0%;
+  font-size: 13px;
+}
+
+.widget-tags{
+  margin-top: 40px;
+  box-shadow: 3px 3px 10px rgb(0 0 0 / 5%),
+  -3px -3px 10px rgb(0 0 0 / 5%);
+}
+
+.widget-tags h4{
+  margin: 0%;
+  padding: 15px;
+  background-color: #f8f9f9;
+  border: solid 1px #e3e6e8;
+  font-size: 13px;
+}
+
+.widget-tags-div{
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  border: solid 1px #e3e6e8;
+  padding: 10px;
+}
+
+.widget-tags-div p{
+  padding: 5px;
+  background-color: #e1ecf4;
+  color: #39739d;
+  border-radius: 2px;
+  font-size: 13px;
+}
+import React from 'react'
+import './RightSidebar.css'
+import Widget from './Widget'
+import WidgetTags from './WidgetTags'
+
+const RightSidebar = () => {
+  return (
+    <aside className='right-sidebar'>
+      <Widget />
+      <WidgetTags/>
+    </aside>
+  )
+}
+
+export default RightSidebar
+import React from 'react'
+import comment from '../../assets/comment-alt-solid.svg'
+import pen from '../../assets/pen-solid.svg'
+import blacklogo from '../../assets/blacklogo.svg'
+
+const Widget = () => {
+  return (
+    <div className='widget'>
+      <h4>The Overflow Blog</h4>
+      <div className='right-sidebar-div-1'>
+        <div className='right-sidebar-div-2'>
+          <img src={pen} alt="pen" width="18" />
+          <p>Observability is the key to the future of software (and your DevOps career)</p>
+        </div>
+        <div className='right-sidebar-div-2'>
+          <img src={pen} alt="pen" width="18" />
+          <p>Observability is the key to the future of software (and your DevOps career)</p>
+        </div>
+      </div>
+      <h4>Featured on Meta</h4>
+        <div className='right-sidebar-div-1'>
+            <div className='right-sidebar-div-2'>
+                <img src={comment} alt="pen" width='18'/>
+                <p>Review queue workflows - Final release....</p>
+            </div>
+            <div className='right-sidebar-div-2'>
+                <img src={comment} alt="pen" width='18'/>
+                <p>Please welcome Valued Associates: #958 - V2Blast #959 - SpencerG</p>
+            </div>
+            <div className='right-sidebar-div-2'>
+                <img src={blacklogo} alt="pen" width='18'/>
+                <p>Outdated Answers: accepted answer is now unpinned on Stack Overflow</p>
+            </div>
+        </div>
+        <h4>Hot Meta Posts</h4>
+        <div className='right-sidebar-div-1'>
+            <div className='right-sidebar-div-2'>
+                <p>38</p>
+                <p>Why was this spam flag declined, yet the question marked as spam?</p>
+            </div>
+            <div className='right-sidebar-div-2'>
+                <p>20</p>
+                <p>What is the best course of action when a user has high enough rep to...</p>
+            </div>
+            <div className='right-sidebar-div-2'>
+                <p>14</p>
+                <p>Is a link to the "How to ask" help page a useful comment?</p>
+            </div>
+        </div>
+    </div>
+  )
+}
+
+export default Widget
+import React from 'react'
+
+const WidgetTags = () => {
+
+  const tags = ['c', 'css',  'express', 'firebase', 'html', 'java', 'javascript','mern','mongodb','mysql','next.js','node.js','php','python','reactjs']
+
+
+  return (
+    <div className='widget-tags'>
+      <h3>Watched Tags</h3>
+      <div className='widget-tags-div'>
+        {
+          tags.map(tag => (
+            <p key={tag}>{tag}</p>
+          ))
+        }
+      </div>
+    </div>
+  )
+}
+
+export default WidgetTags
+.ask-question{
+  min-height:100vh;
+  background-color: #f1f2f3;
+}
+
+.ask-ques-container{
+  margin: auto;
+  max-width: 1200px;
+}
+
+.ask-ques-container h1{
+  padding: 80px 0px 20px 0px;
+}
+
+.ask-ques-container form .ask-form-container{
+  padding: 20px;
+  background-color: white;
+  border-radius: 3px;
+  box-shadow: 0 10px 25px rgb(0 0 0 /5%),
+  0 20px 48px rgb(0 0 0 /5%),
+  0 1px 4px rgb(0 0 0 / 10%);
+}
+
+.ask-form-container label h4{
+  margin-bottom: 0%;
+}
+
+.ask-form-container label p{
+  margin: 0%;
+  font-size: 13px;
+  padding: 3px 0px;
+}
+
+.ask-form-container label input,
+.ask-form-container label textarea{
+  padding: 10px;
+  border: solid 1px #0000003e;
+  font-family: 'Roboto', sans-serif;
+  width: calc(100%-20px);
+  resize: vertical;
+}
+
+.review-btn{
+  margin: 50px 0px;
+  padding: 10px;
+  background-color: #009dff;
+  border: solid 1px #009dff;
+  color:white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.review-btn:hover{
+  background-color: #0086d8;
+}
+import React,{useState} from 'react'
+import './AskQuestion.css'
+import {useDispatch, useSelector} from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { askQuestion } from '../../actions/question'
+
+const AskQuestion = () => {
+    
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const User = useSelector((state) => (state.currentUserReducer))
+    const [questionTitle,setQuestionTitle ] = useState('')
+    const [questionBody, setQuestionBody ] = useState('')
+    const [questionTags, setQuestionTags] = useState('')
+    // const [noOfQuestions, setNoOfQuestions] = useState(User.result.noOfQuestions)
+    // useEffect(() => {
+    //     const getNoOfQuestions = async() => {
+    //         const { res: data } = await axios.post(process.env.REACT_APP_NODE_JS+'plans/getNoOfQuestions')
+    //         console.log(data);
+    //         setNoOfQuestions(data.noOfQuestions)
+    //     }
+    //     getNoOfQuestions()
+    // }, [])
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        dispatch(askQuestion({questionTitle,questionBody,questionTags,userPosted: User.result.name, userId: User.result._id }, navigate))
+    }
+    const handleEnter = (e) => {
+        if (e.key === 'Enter')
+            setQuestionBody(questionBody+'\n')
+    }
+    return (
+        <div className='ask-question'>
+            <div className='ask-ques-container'>
+                <h1>Ask a public Question</h1>
+                <form action="" onSubmit={ handleSubmit }>
+                    <div className='ask-form-container'>
+                        <label htmlFor="ask-ques-title">
+                            <h4>Title</h4>
+                            <p> Be specific and imagine you’re asking a question to another person.</p>
+                            <input type="text" name="ask-ques-title" id="ask-ques-title" placeholder='title' onChange={e=>setQuestionTitle(e.target.value)}/>
+                        </label>
+                        <label htmlFor="ask-ques-body">
+                            <h4>Body</h4>
+                            <p> Introduce the problem and expand on what you put in the title. Minimum 20 characters.</p>
+                            <textarea
+                                name="ask-ques-body"
+                                id="ask-ques-body"
+                                cols="" rows="10"
+                                onChange={e => setQuestionBody(e.target.value)}
+                                onKeyDown={handleEnter}
+                            ></textarea>
+                        </label>
+                        <label htmlFor="ask-ques-tags">
+                            <h4>Tags</h4>
+                            <p> Add up to 5 tags to describe what your question is about. Start typing to see suggestions.</p>
+                            <input type="text" name="ask-ques-tags" id="ask-ques-tags" placeholder='tags' onChange={e=>setQuestionTags(e.target.value.split(' '))}/>
+                        </label>
+                    </div>
+                    {/* <p>You have { noOfQuestions } question(s) remaining for today</p> */}
+                    <input className='review-btn' type="submit" value="Post your question" />
+                </form>
+            </div>
+        </div>
+    )
+}
+
+export default AskQuestion
+
+
+import React from 'react'
+
+const AboutAuth = () => {
+    return (
+        <div className="auth-container-1">
+            <h1>Join the Stack Overflow community</h1>
+            <p>Get unstuck — ask a question</p>
+            <p>Unlock new privileges like voting and commenting</p>
+            <p>Save your favorite tags, filters, and jobs</p>
+            <p>Earn reputation and badges</p>
+            <p style={{fontSize: '13px', color: '#666767'}}>Collaborate and share knowledge with a private group for</p>
+            <p style={{fontSize: '13px', color: "#007ac6"}}>Get Stack Overflow for Teams free for up to 50 users.</p>
+        </div>
+    )
+}
+
+export default AboutAuth
+.auth-section{
+  min-height:100vh;
+  margin:0% auto;
+  background-color: #f1f2f3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-container-1{
+  padding: 20px;
+  margin-right:30px;
+}
+
+.login-logo{
+  padding: 20px 30px;
+}
+
+.auth-container-2{
+  min-width: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-container-2 form{
+  width: 100%;
+  padding:20px;
+  background-color: white;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  box-shadow: 0 10px 25px rgb(0 0 0 /5%)
+  0 20px 48px rgb(0 0 0 /5%)
+  0 1px 4px rgb(0 0 0 /10%);
+}
+
+.auth-container-2 form label input{
+  padding: 10px;
+  width: calc(100% - 30px);
+  border: solid 1px #0000003e;
+  font-size: 13px;
+}
+
+.auth-container-2 form label:nth-child(1) h4,
+.auth-container-2 form label:nth-child(2) h4,
+.auth-container-2 form label:nth-child(3) h4{
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+
+.auth-container-2 form label:nth-child(4){
+  display: flex;   
+}
+
+.auth-container-2 form label:nth-child(4) input{
+  width:15%;
+  margin:13px 0px;
+}
+
+.auth-btn{
+  margin-top: 10px;
+  padding: 10px 5px;
+  background-color: #009dff;
+  border: solid 1px #009dff;
+  color:white;
+  border-radius: 5px;
+  cursor:pointer;
+  transition:0.2s;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.auth-btn:hover{
+  background-color: #018ce3;
+}
+
+.handle-switch-btn{
+  background-color: transparent;
+  color: #007ac6;
+  border:none;
+  font-size: 13px;
+  cursor: pointer;
+}
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import icon from '../../assets/icon.png'
+import AboutAuth from './AboutAuth'
+import {signup,login} from '../../actions/auth'
+import './Auth.css'
+
+const Auth = () => {
+    const [isSignup, setIsSignup] = useState(false)
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const handleSwitch = () => {
+        setIsSignup(!isSignup)
+    }
+
+    const handleSubmit = async(e) => {
+        e.preventDefault()
+        if(!email || !password){
+            alert('Enter valid credentials to continue')
+        }
+        if (isSignup) {
+            if (!name) {
+                alert('Enter a name to continue')
+            }
+            dispatch(signup({name,email,password},navigate))
+        } else {
+            dispatch(login({email, password},navigate))
+        }
+    }
+    return (
+        <section className='auth-section'>
+            { isSignup && <AboutAuth/>}
+            <div className='auth-container-2'>
+                {!isSignup && <img src={icon} alt='stack overflow' className='login-logo' />}
+                <form onSubmit={handleSubmit}>
+                    {
+                        isSignup && (
+                            <label htmlFor='name'>
+                                <h4>Name</h4>
+                                <input type="name" name="name" id="name" onChange={e=>{setName(e.target.value)}}/>
+                            </label>
+                        )
+                    }    
+
+                    <label htmlFor='email'>
+                        <h4>Email</h4>
+                        <input type="email" name="email" id="email" onChange={e=>{setEmail(e.target.value)}}/>
+                    </label>
+                    <label htmlFor='password'>
+                        <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <h4 >Password</h4>
+                            { !isSignup && <p style={{color:'#007ac6',fontSize:'13px'}}>Forgot Password?</p>}
+                        </div>
+                        <input type="password" name="password" id="password" onChange={e=>{setPassword(e.target.value)}}/>
+                        {
+                            isSignup &&
+                                <p style={{color:'#666767',fontSize:'13px'}}>
+                                    Passwords must contain atleast eight characters <br />
+                                    including atleast 1 letter and <br />
+                                    1 number <br />
+                                </p>
+                        }
+                    </label>
+                    {
+                        isSignup && (
+                            <label htmlFor='check'>
+                                <input type="checkbox" name="check" id="check" />
+                                <p style={{fontSize:'13px'}}>Opt-in to receive occasional product updates,<br />
+                                   user research invitations, company announcements, and digests.</p>
+                            </label>
+                        )
+                    }    
+
+                    <button type="submit" className='auth-btn'>{isSignup ? 'Sign up' : 'Log in'}</button>
+                    {
+                        isSignup && (
+                            <label htmlFor=''>
+                                <p style={{color:'#666767',fontSize:'13px'}}>By clicking “Sign up”, <br /> you agree to our <span style={{color:'#007ac6'}}> terms of service </span>,<br />
+                                <span style={{color:'#007ac6'}}>privacy policy</span> and <span style={{color:'#007ac6'}}>cookie policy</span></p>
+                            </label>
+                        )
+                    }    
+                </form>
+                <p>
+                    {isSignup ? 'already have an account?' : 'Don\'t have an account? '}
+                    <button type='button' className='handle-switch-btn' onClick={handleSwitch}>{ isSignup ? 'Log in':'Sign up' }</button>
+                </p>
+            </div>
+        </section>
+      )
+}
+
+export default Auth
+import React from 'react'
+import HomeMainbar from '../../components/HomeMainbar/HomeMainbar'
+import LeftSidebar from '../../components/LeftSidebar/LeftSidebar'
+import RightSidebar from '../../components/RightSidebar/RightSidebar'
+import '../../App.css'
+
+const Home = () => {
+  return (
+    <div className='home-container-1'>
+      <LeftSidebar/>
+      <div className='home-container-2'>
+        <HomeMainbar />
+        <RightSidebar />
+      </div>
+    </div>
+  )
+}
+
+export default Home
+import React, { useEffect, useState } from "react";
+import {
+  PaymentElement,
+  LinkAuthenticationElement,
+  useStripe,
+  useElements
+} from "@stripe/react-stripe-js";
+
+export default function CheckoutForm() {
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const [,setEmail] = useState('');
+  const [message, setMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!stripe) {
+      return;
+    }
+
+    const clientSecret = new URLSearchParams(window.location.search).get(
+      "payment_intent_client_secret"
+    );
+
+    if (!clientSecret) {
+      return;
+    }
+
+    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+      switch (paymentIntent.status) {
+        case "succeeded":
+          setMessage("Payment succeeded!");
+          localStorage.removeItem('Profile')
+          break;
+        case "processing":
+          setMessage("Your payment is processing.");
+          break;
+        case "requires_payment_method":
+          setMessage("Your payment was not successful, please try again.");
+          break;
+        default:
+          setMessage("Something went wrong.");
+          break;
+      }
+    });
+  }, [stripe]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!stripe || !elements) {
+      // Stripe.js has not yet loaded.
+      // Make sure to disable form submission until Stripe.js has loaded.
+      return;
+    }
+
+    setIsLoading(true);
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        // Make sure to change this to your payment completion page
+        return_url: process.env.REACT_APP_FRONT_END,
+      },
+    });
+
+    // This point will only be reached if there is an immediate error when
+    // confirming the payment. Otherwise, your customer will be redirected to
+    // your `return_url`. For some payment methods like iDEAL, your customer will
+    // be redirected to an intermediate site first to authorize the payment, then
+    // redirected to the `return_url`.
+    if (error.type === "card_error" || error.type === "validation_error") {
+      setMessage(error.message);
+    } else {
+      setMessage("An unexpected error occurred.");
+    }
+
+    setIsLoading(false);
+  };
+
+  const paymentElementOptions = {
+    layout: "tabs"
+  }
+
+  return (
+    <form id="payment-form" onSubmit={handleSubmit}>
+      <LinkAuthenticationElement
+        id="link-authentication-element"
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <PaymentElement id="payment-element" options={paymentElementOptions} />
+      <button disabled={isLoading || !stripe || !elements} id="submit">
+        <span id="button-text">
+          {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}
+        </span>
+      </button>
+      {message && <div id="payment-message">{message}</div>}
+    </form>
+  );
+}
+#root .payment{
+  display: flex;
+  align-items: center;
+}
+
+body .payment {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+form .payment {
+  width: 30vw;
+  min-width: 500px;
+  align-self: center;
+  box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+    0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+  border-radius: 7px;
+  padding: 40px;
+}
+
+
+#payment-message {
+  color: rgb(105, 115, 134);
+  font-size: 16px;
+  line-height: 20px;
+  padding-top: 12px;
+  text-align: center;
+}
+
+#payment-element {
+  margin-bottom: 24px;
+}
+
+/* Buttons and links */
+.payment button {
+  background: #5469d4;
+  font-family: Arial, sans-serif;
+  color: #ffffff;
+  border-radius: 4px;
+  border: 0;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: block;
+  transition: all 0.2s ease;
+  box-shadow: 0px 4px 5.5px 0px rgba(0, 0, 0, 0.07);
+  width: 100%;
+}
+
+.payment button:hover {
+  filter: contrast(115%);
+}
+
+.payment button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* spinner/processing state, errors */
+.spinner,
+.spinner:before,
+.spinner:after {
+  border-radius: 50%;
+}
+
+.spinner {
+  color: #ffffff;
+  font-size: 22px;
+  text-indent: -99999px;
+  margin: 0px auto;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  box-shadow: inset 0 0 0 2px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.spinner:before,
+.spinner:after {
+  position: absolute;
+  content: '';
+}
+
+.spinner:before {
+  width: 10.4px;
+  height: 20.4px;
+  background: #5469d4;
+  border-radius: 20.4px 0 0 20.4px;
+  top: -0.2px;
+  left: -0.2px;
+  -webkit-transform-origin: 10.4px 10.2px;
+  transform-origin: 10.4px 10.2px;
+  -webkit-animation: loading 2s infinite ease 1.5s;
+  animation: loading 2s infinite ease 1.5s;
+}
+
+.spinner:after {
+  width: 10.4px;
+  height: 10.2px;
+  background: #5469d4;
+  border-radius: 0 10.2px 10.2px 0;
+  top: -0.1px;
+  left: 10.2px;
+  -webkit-transform-origin: 0px 10.2px;
+  transform-origin: 0px 10.2px;
+  -webkit-animation: loading 2s infinite ease;
+  animation: loading 2s infinite ease;
+}
+
+@keyframes loading {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .payment form {
+    width: 80vw;
+    min-width: initial;
+  }
+}
+import React,{useState,useEffect} from 'react'
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import "./StripeForm.css";
+import CheckoutForm from "./CheckoutForm";
+import {useSelector} from 'react-redux'
+
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUB_KEY);
+
+const StripeForm = (props) => {
+    const [clientSecret, setClientSecret] = useState("");
+    var user = useSelector((state)=>(state.currentUserReducer))
+
+    useEffect(() => {
+      // Create PaymentIntent as soon as the page loads
+        fetch(
+            process.env.REACT_APP_NODE_JS + "payment/purchasePlan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ plan: window.location.href.split('?')[1], id: user.result._id }),
+        })
+        .then((res) => res.json())
+        .then((data) => setClientSecret(data.clientSecret));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const appearance = {
+        theme: 'stripe',
+    };
+  
+    // const appearance = {
+    //     theme: 'night',
+    //     variables: {
+    //       colorPrimary: '#00eeff',
+    //       colorBackground: '#000000',
+    //       colorText: '#ffffff',
+    //     },
+    //   };
+    const options = {
+      clientSecret,
+      appearance,
+    };
+  
+    return (
+      <div className="payment">
+        {clientSecret && (
+          <Elements options={options} stripe={stripePromise}>
+            <CheckoutForm />
+          </Elements>
+        )}
+      </div>
+    );
+}
+
+export default StripeForm
+import React from "react";
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import { useNavigate } from "react-router";
+
+
+export default function PlanCard(props) {
+  const navigate = useNavigate()
+  return (
+    <Card sx={{ minWidth: 275 }}>
+      <CardContent>
+        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          {props.noOfQuestions} {props.isBuyable ?'Questions':'Question'}/day
+        </Typography>
+        <Typography variant="h5" component="div">
+        {props.plan}
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+          {props.price} Rupees Only
+        </Typography>
+        <Typography variant="body2">
+          {/* well meaning and kindly.
+          <br />
+          {'"a benevolent smile"'} */}
+        </Typography>
+      </CardContent>
+      <CardActions>
+        {
+          !props.isBuyable
+            ?
+          <Button size="small" >Applied</Button>
+          : 
+            <Button size="small" onClick={() => {
+              if(props.plan!==props.planOpted)
+                navigate(`/Payment?${props.plan}`)
+              else
+                return
+            }}>{props.plan === props.planOpted ? 'Applied' : 'Buy Now'}</Button>
+
+        }
+      </CardActions>
+    </Card>
+  );
+}
+import React from 'react'
+
+const Failure = () => {
+  return (
+    <div><br /> <br /><br />Failure</div>
+  )
+}
+
+export default Failure
+@media(max-width:400px){
+  .home-container-2{
+      flex-direction: column;
+  }
+}
+import React, { useEffect } from "react";
+import PlanCard from "./Card/PlanCard";
+import LeftSidebar from "../../components/LeftSidebar/LeftSidebar";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import './Plans.css'
+const Plans = () => {
+  var User = useSelector((state) => state.currentUserReducer);
+  const plan = User?.result.planOpted || null
+  const navigate = useNavigate();
+  const profile = localStorage.getItem("Profile");
+  useEffect(() => {
+      if (!profile) {
+        navigate("/Auth");
+      }
+  }, [navigate, profile]);
+  return (
+    <div className="home-container-1">
+      <LeftSidebar />
+      {profile && <div
+        className="home-container-2"
+        style={{
+          display: "flex",
+          height: "50%",
+          gap: "15px",
+          padding: "60px 10px",
+        }}
+      >
+        <PlanCard isBuyable={false} noOfQuestions="1" price="0" plan="Free" />
+        <PlanCard
+          isBuyable={true}
+          planOpted={plan}
+          noOfQuestions="5"
+          price={100}
+          plan="Silver"
+        />
+        <PlanCard
+          isBuyable={true}
+          planOpted={plan}
+          noOfQuestions="Unlimited"
+          price={1000}
+          plan="Gold"
+        />
+      </div>}
+    </div>
+  );
+};
+
+export default Plans;
+import React from 'react'
+const Success = () => {
+  localStorage.removeItem('Profile')
+  return (
+    <div><br /> <br /><br />Success <a href='/Auth'>LogIn Again Please</a></div>
+  )
+}
+
+export default Success
+import React, { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { useLocation } from 'react-router-dom'
+import copy from 'copy-to-clipboard'
+import { useParams } from 'react-router-dom'
+import { deleteAnswer, addReply } from '../../actions/question'
+import { Link } from 'react-router-dom'
+import Avatar from '../../components/Avatar/Avatar'
+import moment from 'moment'
+import Reply from './Reply'
+
+const Answer = ({ ans, question }) => {
+    const [reply, setReply] = useState('')
+    const [enableReply, setEnableReply] = useState(false)
+    const { id } = useParams()
+    const User = useSelector((state) => (state.currentUserReducer))
+    // const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const location = useLocation()
+    const url = process.env.REACT_APP_FRONT_END
+    const handleShare = () => {
+        copy(url + location.pathname)
+        alert('URL Copied to clipboard' + url + location.pathname)
+    }
+
+    const handleDelete = (answerId, noOfAnswers) => {
+        dispatch(deleteAnswer(id, answerId, noOfAnswers - 1))
+    }
+
+    const handleReply = () => {
+        if (reply.length === 0) return
+        dispatch(addReply(id, User?.result?._id, ans._id, reply))
+        setEnableReply(!enableReply)
+    }
+    return (
+        <div className='display-ans' key={ans._id}>
+            <p>{ans.answerBody}</p>
+            <div className='question-actions-user'>
+                <div>
+                    <button type='button' onClick={handleShare}>Share</button>
+                    {
+                        User?.result?._id === ans.userId && (
+                            <button type='button' onClick={() => handleDelete(ans._id, question.noOfAnswers)}>Delete</button>
+                        )
+                    }
+                </div>
+                <div>
+                    {!enableReply && <button type='button' onClick={e => setEnableReply(!enableReply)}>Reply</button>}
+                    {enableReply && <input type="text" autoFocus onChange={e => setReply(e.target.value)} />}
+                    {enableReply && <button type='button'  onClick={handleReply}>Add Reply</button>}
+                    {enableReply && <button type='button' onClick={e => setEnableReply(!enableReply)}>Cancel</button>}
+                </div>
+                <div>
+                    <p>Answered {moment(ans.answeredOn).fromNow()}</p>
+                    <Link to={`/Users/${question.userId}`} className='user-link' style={{ color: '#00086d8' }}>
+                        <Avatar backgroundColor="green" px="8px" py="5px">{ans.userAnswered.charAt(0).toUpperCase()}</Avatar>
+                        <div>{ans.userAnswered}</div>
+                    </Link>
+                </div>
+            </div>
+            <div>
+                {ans.replies.map(r => <Reply replies={r} question={question} />)}
+            </div>
+        </div>
+    )
+}
+
+export default Answer
+import React from 'react'
+import Answer from './Answer'
+
+const DisplayAnswer = ({question}) => {
+    return (
+    <div>
+        {
+            question.answer.map(ans => (
+                <Answer ans={ ans } question={ question } />
+            ))
+        }   
+    </div>
+  )
+}
+
+export default DisplayAnswer
+@media(max-width:772){
+  .right-side-bar{
+      display:none;
+}}
+import React from 'react'
+import LeftSidebar from '../../components/LeftSidebar/LeftSidebar'
+import RightSidebar from '../../components/RightSidebar/RightSidebar'
+import QuestionDetails from './QuestionDetails'
+const DisplayQuestion = () => {
+  return (
+    <div className='home-container-1'>
+      <LeftSidebar/>
+      <div className='home-container-2'>
+        <QuestionDetails/>
+        <RightSidebar  />
+      </div>
+    </div>
+  )
+}
+
+export default DisplayQuestion
+
+import React,{useState} from 'react'
+import { useParams,Link } from 'react-router-dom'
+import {useSelector,useDispatch} from 'react-redux'
+import {useNavigate,useLocation} from 'react-router-dom'
+import {postAnswer,deleteQuestion, voteQuestion} from '../../actions/question'
+import moment from 'moment'
+import copy from 'copy-to-clipboard'
+
+import upvote from '../../assets/sort-up.svg'
+import downvote from '../../assets/sort-down.svg'
+import './Questions.css'
+import Avatar from '../../components/Avatar/Avatar'
+import DisplayAnswer from './DisplayAnswer'
+
+const QuestionDetails = () => {
+    const User = useSelector((state) => (state.currentUserReducer))
+    // const users = useSelector((state) => state.usersReducer)
+    // console.log(users);
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const location = useLocation()
+    const url = process.env.REACT_APP_FRONT_END
+    const [answer, setAnswer] = useState('')
+    const { id } = useParams()
+    // var questionsList = [{ 
+    //     _id: '1',
+    //     upVotes: 3,
+    //     downVotes: 2,
+    //     noOfAnswers: 2,
+    //     questionTitle: "What is a function?",
+    //     questionBody: "It meant to be",
+    //     questionTags: ["java", "node js", "react js", "mongo db", "express js"],
+    //     userPosted: "mano",
+    //     userId: 1,
+    //     askedOn: "jan 1",
+    //     answer: [{
+    //         answerBody: "Answer",
+    //         userAnswered: 'kumar',
+    //         answeredOn: "jan 2",
+    //         userId: 2,
+    //     }]
+    // },{
+    //     _id: '2',
+    //     upVotes: 3,
+    //     downVotes: 2,
+    //     noOfAnswers: 0,
+    //     questionTitle: "What is a function?",
+    //     questionBody: "It meant to be",
+    //     questionTags: ["javascript", "R", "python"],
+    //     userPosted: "mano",
+    //     askedOn: "jan 1",
+    //     userId: 1,
+    //     answer: [{
+    //         answerBody: "Answer",
+    //         userAnswered: 'kumar',
+    //         answeredOn: "jan 2",
+    //         userId: 2,
+    //     }]
+    // },{
+    //     _id: '3',
+    //     upVotes: 3,
+    //     downVotes: 2,
+    //     noOfAnswers: 0,
+    //     questionTitle: "What is a function?",
+    //     questionBody: "It meant to be",
+    //     questionTags: ["javascript", "R", "python"],
+    //     userPosted: "mano",
+    //     askedOn: "jan 1",
+    //     userId: 1,
+    //     answer: [{
+    //         answerBody: "Answer",
+    //         userAnswered: 'kumar',
+    //         answeredOn: "jan 2",
+    //         userId: 2,
+    //     }]
+    // }]
+    const handlePostAnswer = (e,answerLength) => {
+        e.preventDefault()
+        if (User === null) {
+            alert('login or signup to answer a question')
+            navigate('/Auth')
+        } else {
+            if (answer === '') {
+                alert('Enter an answer before submitting')
+            } else {
+                // console.log(User?.result?._id);
+                dispatch(postAnswer({id, noOfAnswers: answerLength+1, answerBody: answer, userAnswered: User.result.name,userId: User?.result?._id }))
+            }
+        }
+    }
+    const handleShare = () => {
+        copy(url + location.pathname)
+        alert('URL Copied to clipboard'+url+location.pathname)
+    }
+
+    const handleDelete = () => {
+        // console.log(id);
+        dispatch(deleteQuestion(id,navigate))
+    }
+
+    const handleUpVote = () => {
+        // console.log('upVoted');
+        dispatch(voteQuestion(id,'upVote',User?.result?._id))
+    }
+    const handleDownVote = () => {
+        // console.log('downVoted');
+        dispatch(voteQuestion(id,'downVote',User?.result?._id))
+        
+    }
+    const questionsList = useSelector(state => state.questionReducer)
+  return (
+    <div className='question-details-page'>
+        {
+            questionsList.data === null ?
+                    <h1>Loading...</h1>
+                :
+                    <>
+                        {
+                            questionsList.data.filter(question => question._id === id).map(question => (
+                                <div key={question._id}>
+                                    <section className='question-details-container'>
+                                        <h1>{question.questionTitle}</h1>
+                                        <div className='question-details-container-2'>
+                                            <div className='question-votes'>
+                                                <img className='.votes-icon' src={upvote} alt="upvote" width='18' onClick={handleUpVote}/>
+                                                <p>{ question.upVote.length - question.downVote.length}</p>
+                                                <img className='.votes-icon' src={downvote} alt="downvote" width='18'onClick={handleDownVote}/>
+                                            </div>
+                                            <div style={{width:'100%'}}>
+                                                <p className='question-body'>{question.questionBody}</p>
+                                                <div className='question-details-tags'> 
+                                                    {
+                                                        question.questionTags.map(tag => (
+                                                            <p key={tag}>{tag}</p>
+                                                        ))    
+                                                    }
+                                                </div>
+                                                <div className='question-actions-user'>
+                                                    <div>
+                                                        <button type='button' onClick={handleShare}>Share</button>
+                                                        {
+                                                            User?.result?._id === question?.userId && (
+                                                                <button type='button' onClick={handleDelete}>Delete</button>
+                                                            )
+                                                        }
+                                                    </div>
+                                                    <div>
+                                                        <p>asked {moment(question.askedOn).fromNow()}</p>
+                                                        <Link to={`/Users/${question.userId}`} className='user-link' style={{ color: '#00086d8' }}>
+                                                            <Avatar backgroundColor="orange" px="8px" py="5px">{ question.userPosted.charAt(0).toUpperCase()}</Avatar>
+                                                            <div>
+                                                                {question.userPosted}
+                                                            </div>
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                    {
+                                        question.noOfAnswers !== 0 && (
+                                            <section>
+                                                <h3>{question.noOfAnswers} Answers</h3>
+                                                <DisplayAnswer key={question} question={question} />
+                                            </section>
+                                        )
+                                    }
+                                    <section className='post-ans-container'>
+                                        <h3>Your Answer</h3>
+                                        <form action="" onSubmit={(e) => { handlePostAnswer(e,question.answer.length) }}>
+                                            <textarea name="" id="" cols="30" rows="10" onChange={(e)=>{setAnswer(e.target.value)}}></textarea>
+                                            <input type="submit" className='post-ans-btn' value='Post your Answer' />
+                                        </form>
+                                        <p>
+                                            Browser Other Questions Tagged!
+                                            {
+                                                question.questionTags.map(tag => (
+                                                    <Link to='/Tags' className='ans-tags' key={tag}>{ tag }</Link>
+                                                ))
+                                            } or {
+                                                <Link to='/AskQuestion' style={{ textDecoration:'none',color:'009dff'}}>Ask Your Own Question</Link>
+                                            }
+                                        </p>
+                                    </section>
+
+                                </div>
+                            ))
+                        }
+                    </>
+        }
+    </div>
+    )
+}
+
+export default QuestionDetails
+.question-details-page{
+  /* width: calc( 100% - 300px - 24px); */
+  float: left;
+  margin: 25px 0px;
+  padding: 0px;
+}
+
+.question-details-container{
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: solid 1px rgba(0, 0, 0, 0.112);
+
+}
+.question-details-container-2{
+  display: flex;
+
+  /* justify-content:space-evenly; */
+}
+.question-votes{
+  padding: 5px 20px 5px 10px;
+}
+.question-votes p{
+  margin: 0%;
+  font-size: 25px;
+  text-align: center;
+}
+.votes-icon{
+  font-size: 40px;
+  cursor: pointer;
+  color: rgb(206, 203, 203);
+}
+.votes-icon:active{
+  color: #ef8236;
+}
+.question-details-container .question-body{
+  line-height: 22px;
+  white-space: pre-line;
+}
+
+.question-details-container .question-details-tags{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.question-details-container .question-details-tags p,
+.post-ans-container p .ans-tags{
+  padding: 5px 5px;
+  margin: 3px;
+  font-size: 13px;
+  border-radius: 2px;
+  background-color: #e1ecf4;
+  color: #39739d;
+  text-decoration: none;
+  line-height: 22px;
+}
+.question-actions-user{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.question-actions-user button, .edit-question-btn{
+  background-color: transparent;
+  border: none;
+  padding: 5px 0px;
+  margin: 0px 10px 0px 0px;
+  text-decoration: none;
+  color: #939292;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+}
+.question-actions-user button:active{
+  border-bottom: solid 2px black;
+}
+.question-actions-user div:nth-child(2) p, 
+.question-actions-user div:nth-child(2) .user-link{
+  text-decoration: none;
+  font-size: 14px;
+  margin: 0%;
+}
+.user-link{
+  display: flex;
+  align-items: center;
+}
+.user-link div{
+  padding-left: 10px;
+}
+/* post answer container */
+
+.post-ans-container form textarea{
+  padding: 10px;
+  border: solid 1px rgba(0, 0, 0, 0.3);
+  font-family: 'Roboto', sans-serif;
+  width: calc(100% - 20px);
+  resize: vertical;
+}
+
+.post-ans-container form .post-ans-btn{
+  margin: 20px 0px;
+  padding: 10px 10px;
+  background-color: #009dff;
+  color: white;
+  border: solid 1px #009dff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.5s all;
+}
+
+.post-ans-container form .post-ans-btn:hover{
+  background-color: #0086d8;
+}
+
+/* Display answer container */
+
+.display-ans{
+  padding-bottom: 20px;
+  border-bottom: solid 1px rgba(0, 0, 0, 0.112);
+}
+
+.display-ans p{
+  font-size: 14px;
+  line-height: 18px;
+  white-space: pre-line;
+}
+import React from 'react'
+import HomeMainbar from '../../components/HomeMainbar/HomeMainbar'
+import LeftSidebar from '../../components/LeftSidebar/LeftSidebar'
+import RightSidebar from '../../components/RightSidebar/RightSidebar'
+import '../../App.css'
+
+const Questions = () => {
+  return (
+    <div className='home-container-1'>
+      <LeftSidebar/>
+      <div className='home-container-2'>
+        <HomeMainbar />
+        <RightSidebar />
+      </div>
+    </div>
+  )
+}
+
+export default Questions
+import React from 'react'
+import { Link } from 'react-router-dom'
+import Avatar from '../../components/Avatar/Avatar'
+const Reply = ({replies,question}) => {
+  return (
+        <div>
+          <p>{replies.reply}</p>
+          <div>
+          <Link to={`/Users/${question.userId}`} className='user-link' style={{ color: '#00086d8' }}>
+              <Avatar backgroundColor="green" px="8px" py="5px">{ replies.userAnswered.charAt(0).toUpperCase()}</Avatar>
+              <div>{replies.userAnswered}</div>
+          </Link>
+      </div>
+        </div>
+  )
+}
+
+export default Reply
+.Smhome-container-1{
+  min-height: 100vh;
+  max-width: 1250px;
+  width: 100%;
+  display: flex;
+  flex-grow: 2;
+  /* justify-content: space-between; */
+  margin: 0% auto;
+}
+
+.Smhome-container-2{
+  width: 100%;
+  border: 1px solid #d6d9dc;
+  padding: 50px 13px;
+  box-sizing: border-box;
+}
+import React, { useEffect } from "react";
+import LeftSidebar from "../../../components/LeftSidebar/LeftSidebar";
+import Grid from "@mui/material/Grid";
+import NewsFeed from "../Post/NewsFeed";
+import { useNavigate } from "react-router-dom";
+import "./SMHome.css";
+import FindPeople from "../User/FindPeople";
+
+const SMHome = () => {
+  const profile = localStorage.getItem("Profile");
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!profile) {
+      navigate("/Auth");
+    }
+  }, [navigate, profile]);
+
+  return (
+    <div className="Smhome-container-1">
+      <LeftSidebar />
+      {profile && (
+        <div className="Smhome-container-2">
+          <Grid container spacing={1}>
+            <Grid item xs={10} sm={7}>
+              <NewsFeed />
+            </Grid>
+            <Grid item xs={10} sm={5}>
+              <FindPeople />
+            </Grid>
+          </Grid>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SMHome;
+import React, { useState } from "react";
+import auth from "../../../api/auth-helper";
+import CardHeader from "@mui/material/CardHeader";
+import TextField from "@mui/material/TextField";
+import Avatar from "@mui/material/Avatar";
+import Icon from "@mui/material/Icon";
+import PropTypes from "prop-types";
+import { comment, uncomment } from "../../../api/api-post.js";
+import { Link } from "react-router-dom";
+
+
+
+const Comments = (props) => {
+  const [text, setText] = useState("");
+  const jwt = auth.isAuthenticated();
+  const handleChange = (event) => {
+    setText(event.target.value);
+  };
+  const addComment = (event) => {
+    if (event.keyCode === 13 && event.target.value) {
+      event.preventDefault();
+      comment(
+        {
+          userId: jwt.user._id,
+        },
+        {
+          t: jwt.token,
+        },
+        props.postId,
+        { text: text }
+      ).then((data) => {
+        if (data.error) {
+          console.log(data.error);
+        } else {
+          setText("");
+          props.updateComments(data.comments);
+        }
+      });
+    }
+  };
+
+  const deleteComment = (comment) => (event) => {
+    uncomment(
+      {
+        userId: jwt.user._id,
+      },
+      {
+        t: jwt.token,
+      },
+      props.postId,
+      comment
+    ).then((data) => {
+      if (data.error) {
+        console.log(data.error);
+      } else {
+        props.updateComments(data.comments);
+      }
+    });
+  };
+
+  const commentBody = (item) => {
+    return (
+      <p styles={{
+        backgroundColor: 'white',
+        padding: '1px',
+        margin: `2px 2px 2px 2px`
+      }}>
+        <Link to={"/SocialMedia/User/" + item.postedBy._id}>{item.postedBy.name}</Link>
+        <br />
+        {item.text}
+        <span styles={{
+    display: 'block',
+    color: 'gray',
+    fontSize: '0.8em'
+ }}>
+          {new Date(item.created).toDateString()} |
+          {auth.isAuthenticated().user._id === item.postedBy._id && (
+            <Icon
+              onClick={deleteComment(item)}
+              styles={{
+                fontSize: '1.6em',
+                verticalAlign: 'middle',
+                cursor: 'pointer'
+              }}
+            >
+              delete
+            </Icon>
+          )}
+        </span>
+      </p>
+    );
+  };
+
+  return (
+    <div>
+      <CardHeader
+        avatar={
+          <Avatar
+            styles={ {
+              width: 25,
+              height: 25
+            }}
+            src={process.env.REACT_APP_NODE_JS+'posts/photo/'+ auth.isAuthenticated().user._id}
+          />
+        }
+        title={
+          <TextField
+            onKeyDown={addComment}
+            multiline
+            value={text}
+            onChange={handleChange}
+            placeholder="Write something ..."
+            styles={{
+              width: '96%'
+            }}
+            margin="normal"
+          />
+        }
+        styles={{
+          paddingTop: '1px',
+          paddingBottom: '1px'
+        }}
+      />
+      {props.comments.map((item, i) => {
+        return (
+          <CardHeader
+            avatar={
+              <Avatar
+                styles={{
+                  width: 25,
+                  height: 25
+                }}
+                src={process.env.REACT_APP_NODE_JS+'posts/photo/' + item.postedBy._id}
+              />
+            }
+            title={commentBody(item)}
+            styles={{
+              paddingTop: '1px',
+              paddingBottom: '1px'
+            }}
+            key={i}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+Comments.propTypes = {
+  postId: PropTypes.string.isRequired,
+  comments: PropTypes.array.isRequired,
+  updateComments: PropTypes.func.isRequired,
+};
+
+export default Comments;
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import Icon from "@mui/material/Icon";
+import IconButton from "@mui/material/IconButton";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
+
+import auth from "../../../api/auth-helper";
+import { create } from "../../../api/api-post";
+
+const NewPost = (props) => {
+  const [values, setValues] = useState({
+    text: "",
+    photo: "",
+    error: "",
+    user: {},
+  });
+  const jwt = auth.isAuthenticated();
+  useEffect(() => {
+    setValues({ ...values, user: auth.isAuthenticated().user });
+  }, []);
+  const clickPost = () => {
+    let postData = new FormData();
+    postData.append("text", values.text);
+    postData.append("photo", values.photo);
+    create(
+      {
+        userId: jwt.user._id,
+      },
+      {
+        t: jwt.token,
+      },
+      postData
+    ).then((data) => {
+      console.log(data);
+      if (data.error) {
+        setValues({ ...values, error: data.error });
+      } else {
+        setValues({ ...values, text: "", photo: "" });
+        props.addUpdate(data);
+      }
+    });
+  };
+  const handleChange = (name) => (event) => {
+    const value = name === "photo" ? event.target.files[0] : event.target.value;
+    setValues({ ...values, [name]: value });
+  };
+  const photoURL = values.user._id
+    ? process.env.REACT_APP_NODE_JS + "posts/photo/" + values.user._id
+    : process.env.REACT_APP_NODE_JS + "posts/defaultPhoto/";
+
+  return (
+    <div
+      styles={{
+        backgroundColor: "#efefef",
+        padding: "3px 0px 1px",
+      }}
+    >
+      <Card
+        styles={{
+          maxWidth: 600,
+          margin: "auto",
+          marginBottom: "3px",
+          backgroundColor: "rgba(65, 150, 136, 0.09)",
+          boxShadow: "none",
+        }}
+      >
+        <CardHeader
+          avatar={<Avatar src={photoURL} />}
+          title={values.user.name}
+          styles={{
+            paddingTop: 8,
+            paddingBottom: 8,
+          }}
+        />
+        <CardContent
+          styles={{
+            backgroundColor: "white",
+            paddingTop: 0,
+            paddingBottom: 0,
+          }}
+        >
+          <TextField
+            placeholder="Share your thoughts ..."
+            multiline
+            rows="3"
+            value={values.text}
+            onChange={handleChange("text")}
+            styles={{
+              marginLeft: "2px",
+              marginRight: "2px",
+              width: "90%",
+            }}
+            margin="normal"
+            inputProps={{ maxLength: 60 }}
+          /><br/>
+          <input
+            accept="image/*"
+            onChange={handleChange("photo")}
+            styles={{
+              display: "none",
+            }}
+            id="icon-button-file"
+            type="file"
+          />
+          <label htmlFor="icon-button-file">
+            <IconButton
+              color="secondary"
+              styles={{
+                height: 30,
+                marginBottom: 5,
+              }}
+              component="span"
+            >
+              <PhotoCamera />
+            </IconButton>
+          </label>{" "}
+          <span
+            styles={{
+              verticalAlign: "super",
+            }}
+          >
+            {values.photo ? values.photo.name : ""}
+          </span>
+          {values.error && (
+            <Typography component="p" color="error">
+              <Icon color="error" styles={{}}>
+                error
+              </Icon>
+              {values.error}
+            </Typography>
+          )}
+        </CardContent>
+        <CardActions>
+          <Button
+            color="primary"
+            variant="contained"
+            disabled={values.text === ""}
+            onClick={clickPost}
+            styles={{
+              margin: "2px",
+            }}
+          >
+            POST
+          </Button>
+        </CardActions>
+      </Card>
+    </div>
+  );
+};
+
+export default NewPost;
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react'
+import Card from '@mui/material/Card'
+import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
+import auth from '../../../api/auth-helper'
+import {listNewsFeed} from '../../../api/api-post'
+
+import PostList from './PostList'
+import NewPost from './NewPost'
+
+const NewsFeed = () => {
+    const [posts, setPosts] = useState([])
+    const jwt = auth.isAuthenticated()
+  
+    useEffect(() => {
+      const abortController = new AbortController()
+      const signal = abortController.signal
+  
+      listNewsFeed({
+        userId: jwt.user._id
+      }, {
+        t: jwt.token
+      }, signal).then((data) => {
+        if (data.error) {
+          console.log(data.error)
+        } else {
+          setPosts(data)
+        }
+      })
+      return function cleanup(){
+        abortController.abort()
+      }
+  
+    }, [])
+  
+    const addPost = (post) => {
+      const updatedPosts = [...posts]
+      updatedPosts.unshift(post)
+      setPosts(updatedPosts)
+    }
+    const removePost = (post) => {
+      const updatedPosts = [...posts]
+      const index = updatedPosts.indexOf(post)
+      updatedPosts.splice(index, 1)
+      setPosts(updatedPosts)
+    }
+  return (
+    <Card sx={{ width:'100%'}}>
+    <Typography type="title" >
+      Newsfeed
+    </Typography>
+    <Divider/>
+    <NewPost addUpdate={addPost}/>
+    <Divider/>
+    <PostList removeUpdate={removePost} posts={posts}/>
+  </Card>
+  )
+}
+
+export default NewsFeed
+import React, { useState } from "react";
+import auth from "../../../api/auth-helper";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import CommentIcon from "@mui/icons-material/Comment";
+import Divider from "@mui/material/Divider";
+import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
+import { remove, like, unlike } from "../../../api/api-post.js";
+import Comments from "./Comments";
+
+export default function Post(props) {
+  const jwt = auth.isAuthenticated();
+  const checkLike = (likes) => {
+    let match = likes.indexOf(jwt.user._id) !== -1;
+    return match;
+  };
+  const [values, setValues] = useState({
+    like: checkLike(props.post.likes),
+    likes: props.post.likes.length,
+    comments: props.post.comments,
+  });
+
+  // useEffect(() => {
+  //   setValues({...values, like:checkLike(props.post.likes), likes: props.post.likes.length, comments: props.post.comments})
+  // }, [])
+
+  const clickLike = () => {
+    let callApi = values.like ? unlike : like;
+    callApi(
+      {
+        userId: jwt.user._id,
+      },
+      {
+        t: jwt.token,
+      },
+      props.post._id
+    ).then((data) => {
+      if (data.error) {
+        console.log(data.error);
+      } else {
+        setValues({ ...values, like: !values.like, likes: data.likes.length });
+      }
+    });
+  };
+
+  const updateComments = (comments) => {
+    setValues({ ...values, comments: comments });
+  };
+
+  const deletePost = () => {
+    remove(
+      {
+        postId: props.post._id,
+      },
+      {
+        t: jwt.token,
+      }
+    ).then((data) => {
+      if (data.error) {
+        console.log(data.error);
+      } else {
+        props.onRemove(props.post);
+      }
+    });
+  };
+
+  return (
+    <Card
+      styles={{
+        maxWidth: 600,
+        margin: "auto",
+        marginBottom: "3px",
+        backgroundColor: "rgba(0, 0, 0, 0.06)",
+      }}
+    >
+      <CardHeader
+        avatar={<Avatar src={process.env.REACT_APP_NODE_JS+'users/photo/'+ props.post.postedBy._id} />}
+        action={
+          props.post.postedBy._id === auth.isAuthenticated().user._id && (
+            <IconButton onClick={deletePost}>
+              <DeleteIcon />
+            </IconButton>
+          )
+        }
+        title={
+          <Link to={"/SocialMedia/User/" + props.post.postedBy._id}>
+            {props.post.postedBy.name}
+          </Link>
+        }
+        subheader={new Date(props.post.created).toDateString()}
+        styles={{
+          paddingTop: "1px",
+          paddingBottom: "1px",
+        }}
+      />
+      <CardContent
+        styles={{
+          backgroundColor: "white",
+          padding: "2px 0px",
+        }}
+      >
+        <Typography
+          component="p"
+          styles={{
+            margin: "2px",
+          }}
+        >
+          {props.post.text}
+        </Typography>
+        {props.post.photo && (
+          <div
+            styles={{
+              textAlign: "center",
+              backgroundColor: "#f2f5f4",
+              padding: "1px",
+            }}
+          >
+            <img
+              styles={{
+                height: 200,
+              }}
+              alt='post'
+              src={process.env.REACT_APP_NODE_JS+'posts/photo/' + props.post._id}
+            />
+          </div>
+        )}
+      </CardContent>
+      <CardActions>
+        {values.like ? (
+          <IconButton
+            onClick={clickLike}
+            styles={{
+              margin: "1px",
+            }}
+            aria-label="Like"
+            color="secondary"
+          >
+            <FavoriteIcon />
+          </IconButton>
+        ) : (
+          <IconButton
+            onClick={clickLike}
+            styles={{
+              margin: "1px",
+            }}
+            aria-label="Unlike"
+            color="secondary"
+          >
+            <FavoriteBorderIcon />
+          </IconButton>
+        )}{" "}
+        <span>{values.likes}</span>
+        <IconButton
+          styles={{
+            margin: "1px",
+          }}
+          aria-label="Comment"
+          color="secondary"
+        >
+          <CommentIcon />
+        </IconButton>{" "}
+        <span>{values.comments.length}</span>
+      </CardActions>
+      <Divider />
+      <Comments
+        postId={props.post._id}
+        comments={values.comments}
+        updateComments={updateComments}
+      />
+    </Card>
+  );
+}
+
+Post.propTypes = {
+  post: PropTypes.object.isRequired,
+  onRemove: PropTypes.func.isRequired,
+};
+import React from 'react'
+import PropTypes from 'prop-types'
+import Post from './Post'
+
+export default function PostList (props) {
+    return (
+      <div style={{marginTop: '24px'}}>
+        {props.posts.map((item, i) => {
+            return <Post post={item} key={i} onRemove={props.removeUpdate}/>
+          })
+        }
+      </div>
+    )
+}
+PostList.propTypes = {
+  posts: PropTypes.array.isRequired,
+  removeUpdate: PropTypes.func.isRequired
+}
+import React, {useState} from 'react'
+import PropTypes from 'prop-types'
+import IconButton from '@mui/material/IconButton'
+import Button from '@mui/material/Button'
+import DeleteIcon from '@mui/icons-material//Delete'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import auth from './../../../api/auth-helper'
+import {remove} from './../../../api/api-user.js'
+import {useNavigate} from 'react-router-dom'
+
+export default function DeleteUser(props) {
+  const [open, setOpen] = useState(false)
+  const [redirect, setRedirect] = useState(false)
+  const navigate = useNavigate()
+  const jwt = auth.isAuthenticated()
+  const clickButton = () => {
+    setOpen(true)
+  }
+  const deleteAccount = () => { 
+    remove({
+      userId: props.userId
+    }, {t: jwt.token}).then((data) => {
+      if (data && data.error) {
+        console.log(data.error)
+      } else {
+        auth.clearJWT(() => console.log('deleted'))
+        setRedirect(true)
+      }
+    })
+  }
+  const handleRequestClose = () => {
+    setOpen(false)
+  }
+
+    if (redirect) {
+      return navigate('/')
+    }
+    return (<span>
+      <IconButton aria-label="Delete" onClick={clickButton} color="secondary">
+        <DeleteIcon/>
+      </IconButton>
+
+      <Dialog open={open} onClose={handleRequestClose}>
+        <DialogTitle>{"Delete Account"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Confirm to delete your account.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleRequestClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={deleteAccount} color="secondary" autoFocus="autoFocus">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </span>)
+}
+DeleteUser.propTypes = {
+  userId: PropTypes.string.isRequired
+}
+import React, {useEffect, useState} from 'react'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import Icon from '@mui/material/Icon'
+import Avatar from '@mui/material/Avatar'
+import FileUpload from '@mui/icons-material//AddPhotoAlternate'
+import auth from './../../../api/auth-helper'
+import {read, update} from './../../../api/api-user.js'
+import {useNavigate, useParams} from 'react-router-dom'
+import { orange } from '@mui/material/colors'
+
+
+export default function EditProfile() {
+  const [values, setValues] = useState({
+    name: '',
+    about: '',
+    photo: '',
+    email: '',
+    password: '',
+    redirectToProfile: false,
+    error: '',
+    id: ''
+  })
+  const jwt = auth.isAuthenticated()
+  const {userId} = useParams()
+  const navigate = useNavigate()
+  useEffect(() => {
+    const abortController = new AbortController()
+    const signal = abortController.signal
+
+    read({
+      userId: userId
+    }, {t: jwt.token}, signal).then((data) => {
+      if (data & data.error) {
+        setValues({...values, error: data.error})
+      } else {
+        setValues({...values, id: data._id, name: data.name, email: data.email, about: data.about})
+      }
+    })
+    return function cleanup(){
+      abortController.abort()
+    }
+
+  }, [jwt.token, userId, values])
+  
+  const clickSubmit = () => {
+    let userData = new FormData()
+    values.name && userData.append('name', values.name)
+    values.email && userData.append('email', values.email)
+    values.passoword && userData.append('passoword', values.passoword)
+    values.about && userData.append('about', values.about)
+    values.photo && userData.append('photo', values.photo)
+    update({
+      userId: userId
+    }, {
+      t: jwt.token
+    }, userData).then((data) => {
+      if (data && data.error) {
+        setValues({...values, error: data.error})
+      } else {
+        setValues({...values, 'redirectToProfile': true})
+      }
+    })
+  }
+  const handleChange = name => event => {
+    const value = name === 'photo'
+      ? event.target.files[0]
+      : event.target.value
+    //userData.set(name, value)
+    setValues({...values, [name]: value })
+  }
+    const photoUrl = values.id
+                 ? `${process.env.REACT_APP_NODE_JS}+users/photo/${values.id}?${new Date().getTime()}`
+                 : process.env.REACT_APP_NODE_JS+'users/defaultphoto'
+    if (values.redirectToProfile) {
+      return (navigate('/SocialMedia/User/' + values.id))
+    }
+    return (
+      <Card styles={{
+        maxWidth: 600,
+        margin: 'auto',
+        textAlign: 'center',
+        marginTop: '5px',
+        paddingBottom: '2px'
+      }}>
+        <CardContent>
+          <Typography variant="h6" styles={{
+    margin: '2px',
+    color: orange['700']
+  }}>
+            Edit Profile
+          </Typography>
+          <Avatar src={photoUrl} styles={{
+    width: 60,
+    height: 60,
+    margin: 'auto'
+  }}/><br/>
+          <input accept="image/*" onChange={handleChange('photo')} styles={{
+    display: 'none'
+  }} id="icon-button-file" type="file" />
+          <label htmlFor="icon-button-file">
+            <Button variant="contained" color="default" component="span">
+              Upload
+              <FileUpload/>
+            </Button>
+          </label> <span styles={{
+    marginLeft:'10px'
+  }}>{values.photo ? values.photo.name : ''}</span><br/>
+          <TextField id="name" label="Name" styles={{
+    marginLeft: '1px',
+    marginRight: '1px',
+    width: 300
+  }} value={values.name} onChange={handleChange('name')} margin="normal"/><br/>
+          <TextField
+            id="multiline-flexible"
+            label="About"
+            multiline
+            rows="2"
+            value={values.about}
+            onChange={handleChange('about')}
+            styles={{
+              marginLeft: '1px',
+              marginRight: '1px',
+              width: 300
+            }}
+            margin="normal"
+          /><br/>
+          <TextField id="email" type="email" label="Email" styles={{
+    marginLeft: '1px',
+    marginRight: '1px',
+    width: 300
+  }} value={values.email} onChange={handleChange('email')} margin="normal"/><br/>
+          <TextField id="password" type="password" label="Password" styles={{
+    marginLeft: '1px',
+    marginRight: '1px',
+    width: 300
+  }} value={values.password} onChange={handleChange('password')} margin="normal"/>
+          <br/> {
+            values.error && (<Typography component="p" color="error">
+              <Icon color="error" styles={{
+    verticalAlign: 'middle'
+  }}>error</Icon>
+              {values.error}
+            </Typography>)
+          }
+        </CardContent>
+        <CardActions>
+          <Button color="primary" variant="contained" onClick={clickSubmit} styles={{
+    margin: 'auto',
+    marginBottom: '2px'
+  }}>Submit</Button>
+        </CardActions>
+      </Card>
+    )
+}
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from "react";
+import Paper from "@mui/material/Paper";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import ListItemText from "@mui/material/ListItemText";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import { Link } from "react-router-dom";
+import { findPeople, follow } from "./../../../api/api-user";
+import auth from "./../../../api/auth-helper";
+import Snackbar from "@mui/material/Snackbar";
+import { orange, teal } from "@mui/material/colors";
+
+export default function FindPeople() {
+  const [values, setValues] = useState({
+    users: [],
+    open: false,
+    followMessage: "",
+  });
+  const jwt = auth.isAuthenticated();
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
+    findPeople(
+      {
+        userId: jwt.user._id,
+      },
+      {
+        t: jwt.token,
+      },
+      signal
+    ).then((data) => {
+      if (data && data.error) {
+        console.log(data.error);
+      } else {
+        setValues({ ...values, users: data });
+      }
+    });
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, []);
+  const clickFollow = (user, index) => {
+    follow(
+      {
+        userId: jwt.user._id,
+      },
+      {
+        t: jwt.token,
+      },
+      user._id
+    ).then((data) => {
+      if (data.error) {
+        console.log(data.error);
+      } else {
+        let toFollow = values.users;
+        toFollow.splice(index, 1);
+        setValues({
+          ...values,
+          users: toFollow,
+          open: true,
+          followMessage: `Following ${user.name}!`,
+        });
+      }
+    });
+  };
+  const handleRequestClose = (event, reason) => {
+    setValues({ ...values, open: false });
+  };
+  return (
+    <div>
+      <Paper
+        styles={{
+          padding: "1px",
+          margin: 0,
+        }}
+        elevation={4}
+      >
+        <Typography
+          type="title"
+          styles={{
+            margin: "1px 1px 1px 1px",
+            color: teal["700"],
+            fontSize: "1em",
+          }}
+        >
+          Who to follow
+        </Typography>
+        <List>
+          {values.users.map((item, i) => {
+            return (
+              <span key={i}>
+                <ListItem>
+                  <ListItemAvatar
+                    styles={{
+                      marginRight: "1px",
+                    }}
+                  >
+                    <Avatar src={process.env.REACT_APP_NODE_JS+'posts/photo/' + item._id} />
+                  </ListItemAvatar>
+                  <ListItemText primary={item.name} />
+                  <ListItemSecondaryAction
+                    styles={{
+                      right: "1px",
+                    }}
+                  >
+                    <Link to={"/SocialMedia/User/" + item._id}>
+                      <IconButton
+                        variant="contained"
+                        color="secondary"
+                        styles={{
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        {/* <ViewIcon /> */}
+                      </IconButton>
+                    </Link>
+                    <Button
+                      aria-label="Follow"
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        clickFollow(item, i);
+                      }}
+                    >
+                      Follow
+                    </Button>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </span>
+            );
+          })}
+        </List>
+      </Paper>
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        open={values.open}
+        onClose={handleRequestClose}
+        autoHideDuration={6000}
+        message={
+          <span
+            styles={{
+              color: orange["700"],
+            }}
+          >
+            {values.followMessage}
+          </span>
+        }
+      />
+    </div>
+  );
+}
+import React from "react";
+import PropTypes from "prop-types";
+import Avatar from "@mui/material/Avatar";
+import Typography from "@mui/material/Typography";
+import { Link } from "react-router-dom";
+import Grid from "@mui/material/Grid";
+export default function FollowGrid(props) {
+  return (
+    <div
+      styles={{
+        paddingTop: "2px",
+        display: "flex",
+        // flexDirection:'row',
+        flexWrap: "wrap",
+        justifyContent: "space-around",
+        overflow: "hidden",
+        background: "#ffff",
+      }}
+    >
+      <Grid
+        cellHeight={160}
+        styles={{
+          width: 500,
+          height: 220,
+        }}
+        cols={4}
+      >
+        {props.people.map((person, i) => {
+          return (
+            <Grid style={{ height: 220 }} key={i}>
+              <Link to={"/SocialMedia/User/" + person._id}>
+                <Avatar
+                  src={
+                    process.env.REACT_APP_NODE_JS + "posts/photo/" + person._id
+                  }
+                  styles={{
+                    width: "60%",
+                    height: "60%",
+                    margin: "auto",
+                  }}
+                />
+                <Typography
+                  styles={{
+                    textAlign: "center",
+                    marginTop: 10,
+                  }}
+                >
+                  {person.name}
+                </Typography>
+              </Link>
+            </Grid>
+          );
+        })}
+      </Grid>
+    </div>
+  );
+}
+
+FollowGrid.propTypes = {
+  people: PropTypes.array.isRequired,
+};
+import React from 'react'
+import PropTypes from 'prop-types'
+import Button from '@mui/material/Button'
+import {unfollow, follow} from './../../../api/api-user.js'
+
+export default function FollowProfileButton (props) {
+  const followClick = () => {
+    props.onButtonClick(follow)
+  }
+  const unfollowClick = () => {
+    props.onButtonClick(unfollow)
+  }
+    return (<div>
+      { props.following
+        ? (<Button variant="contained" color="secondary" onClick={unfollowClick}>Unfollow</Button>)
+        : (<Button variant="contained" color="primary" onClick={followClick}>Follow</Button>)
+      }
+    </div>)
+}
+FollowProfileButton.propTypes = {
+  following: PropTypes.bool.isRequired,
+  onButtonClick: PropTypes.func.isRequired
+}
+import React, { useState, useEffect } from 'react'
+import Paper from '@mui/material/Paper'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction' 
+import ListItemText from '@mui/material/ListItemText' 
+import Avatar from '@mui/material/Avatar'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import Edit from '@mui/icons-material//Edit'
+import Divider from '@mui/material/Divider'
+import DeleteUser from './DeleteUser'
+import auth from './../../../api/auth-helper'
+import {read} from './../../../api/api-user.js'
+import {useNavigate, Link, useParams} from 'react-router-dom'
+import FollowProfileButton from './FollowProfileButton'
+import ProfileTabs from './ProfileTabs'
+import {listByUser} from './../../../api/api-post.js'
+import { orange } from '@mui/material/colors'
+
+
+export default function Profile() {
+  const [values, setValues] = useState({
+    user: {following:[], followers:[]},
+    redirectToSignin: false,
+    following: false
+  })
+  const {userId} = useParams();
+
+  const [posts, setPosts] = useState([])
+  const jwt = auth.isAuthenticated()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const abortController = new AbortController()
+    const signal = abortController.signal
+  
+    const checkFollow = (user) => {
+      const match = user.followers.some((follower)=> {
+        return follower._id === jwt.user._id
+      })
+      return match
+    }
+    const loadPosts = (user) => {
+      listByUser({
+        userId: user
+      }, {
+        t: jwt.token
+      }).then((data) => {
+        if (data.error) {
+          console.log(data.error)
+        } else {
+          setPosts(data)
+        }
+      })
+    }
+    read({
+      userId: userId
+    }, {t: jwt.token}, signal).then((data) => {
+      if (data && data.error) {
+        setValues({...values, redirectToSignin: true})
+      } else {
+        let following = checkFollow(data)
+        setValues({...values, user: data, following: following})
+        loadPosts(data._id)
+      }
+    })
+    return function cleanup(){
+      abortController.abort()
+    }
+
+  }, [jwt.token, jwt.user._id, userId, values])
+  
+  const clickFollowButton = (callApi) => {
+    callApi({
+      userId: jwt.user._id
+    }, {
+      t: jwt.token
+    }, values.user._id).then((data) => {
+      if (data.error) {
+        setValues({...values, error: data.error})
+      } else {
+        setValues({...values, user: data, following: !values.following})
+      }
+    })
+  }
+  const removePost = (post) => {
+    const updatedPosts = posts
+    const index = updatedPosts.indexOf(post)
+    updatedPosts.splice(index, 1)
+    setPosts(updatedPosts)
+  }
+
+    const photoUrl = values.user._id
+              ? process.env.REACT_APP_NODE_JS+`users/photo/${values.user._id}?${new Date().getTime()}`
+              : process.env.REACT_APP_NODE_JS+'users/defaultphoto'
+    if (values.redirectToSignin) {
+      return navigate('/Auth')
+    }
+    return (
+      <Paper styles={{
+        maxWidth: 600,
+        margin: 'auto',
+        padding: '50px 10px',
+        marginTop: '5px'
+      }} elevation={4}>
+        <Typography variant="h6" styles={{
+    margin: `2px 1px 0`,
+    color:orange['700'],
+    fontSize: '1em'
+  }}>
+          Profile
+        </Typography>
+        <List dense>
+          <ListItem>
+            <ListItemAvatar>
+              <Avatar src={photoUrl} styles={{
+    width: 60,
+    height: 60,
+    margin: 10
+  }}/>
+            </ListItemAvatar>
+            <ListItemText primary={values.user.name} secondary={values.user.email}/> {
+             auth.isAuthenticated().user && auth.isAuthenticated().user._id === values.user._id
+             ? (<ListItemSecondaryAction>
+                  <Link to={"/SocialMedia/User/edit/" + values.user._id}>
+                    <IconButton aria-label="Edit" color="primary">
+                      <Edit/>
+                    </IconButton>
+                  </Link>
+                  <DeleteUser userId={values.user._id}/>
+                </ListItemSecondaryAction>)
+            : (<FollowProfileButton following={values.following} onButtonClick={clickFollowButton}/>)
+            }
+          </ListItem>
+          <Divider/>
+          <ListItem>
+            <ListItemText primary={values.user.about} secondary={"Joined: " + (
+              new Date(values.user.created)).toDateString()}/>
+          </ListItem>
+        </List>
+        <ProfileTabs user={values.user} posts={posts} removePostUpdate={removePost}/>
+      </Paper>
+    )
+}
+import React, {useState} from 'react'
+import PropTypes from 'prop-types'
+import AppBar from '@mui/material/AppBar'
+import Typography from '@mui/material/Typography'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+import FollowGrid from './FollowGrid'
+import PostList from '../Post/PostList'
+
+export default function ProfileTabs ( props ){
+  const [tab, setTab] = useState(0)
+
+  const handleTabChange = (event, value) => {
+    setTab(value)
+  }
+
+    return (
+    <div>
+        <AppBar position="static" color="default">
+          <Tabs
+            value={tab}
+            onChange={handleTabChange}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
+          >
+            <Tab label="Posts" />
+            <Tab label="Following" />
+            <Tab label="Followers" />
+          </Tabs>
+        </AppBar>
+       {tab === 0 && <TabContainer><PostList removeUpdate={props.removePostUpdate} posts={props.posts}/></TabContainer>}
+       {tab === 1 && <TabContainer><FollowGrid people={props.user.following}/></TabContainer>}
+       {tab === 2 && <TabContainer><FollowGrid people={props.user.followers}/></TabContainer>}
+    </div>)
+  
+}
+
+ProfileTabs.propTypes = {
+  user: PropTypes.object.isRequired,
+  removePostUpdate: PropTypes.func.isRequired,
+  posts: PropTypes.array.isRequired
+}
+
+const TabContainer = (props) => {
+  return (
+    <Typography component="div" style={{ padding: 8 * 2 }}>
+      {props.children}
+    </Typography>
+  )
+}
+
+TabContainer.propTypes = {
+  children: PropTypes.node.isRequired
+}
+import React, { useState, useEffect } from "react";
+import Paper from "@mui/material/Paper";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import ListItemText from "@mui/material/ListItemText";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import ArrowForward from "@mui/icons-material/ArrowForward";
+import Person from "@mui/icons-material/Person";
+import { Link } from "react-router-dom";
+import { list } from "../../../api/api-user";
+import { teal } from "@mui/material/colors";
+import LeftSidebar from "../../../components/LeftSidebar/LeftSidebar";
+
+export default function SMUsers() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
+    list(signal).then((data) => {
+      if (data && data.error) {
+        console.log(data.error);
+      } else {
+        setUsers(data);
+      }
+    });
+
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, []);
+
+  return (
+    <div className="Smhome-container-1">
+      <LeftSidebar />
+      <div className="Smhome-container-2">
+        <Paper
+          styles={{
+            padding: "50px 10px",
+            margin: "15px",
+          }}
+          elevation={4}
+        >
+          <Typography
+            variant="h6"
+            styles={{
+              margin: "4px 0 2px",
+              color: teal["700"],
+            }}
+          >
+            All Users
+          </Typography>
+          <List dense>
+            {users.map((item, i) => {
+              return (
+                <Link to={"/SocialMedia/User/" + item._id} key={i}>
+                  <ListItem button>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <Person />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary={item.name} />
+                    <ListItemSecondaryAction>
+                      <IconButton>
+                        <ArrowForward />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                </Link>
+              );
+            })}
+          </List>
+        </Paper>
+      </div>
+    </div>
+  );
+}
+
+.tags-h1{
+  margin-top: 50px;
+  font-weight: 400;
+}
+
+.tags-p{
+  margin: 8px;
+  font-size: 15px;
+}
+
+.tags-list-container{
+  padding: 30px 0px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.tag{
+  padding: 10px;
+  border: solid 1px #d2d2d2;
+  border-radius: 2px;
+}
+
+.tag h5{
+  display : inline-block;
+  margin: 10px 0px;
+  padding: 5px 5px;
+  background-color: #e1ecf4;
+  color: #39739d;
+}
+
+.tag p{
+  font-size:14px;
+  color: #323232;
+  line-height: 17px;
+}
+import React from 'react'
+import LeftSidebar from '../../components/LeftSidebar/LeftSidebar'
+import TagsList from './TagsList'
+import './Tags.css'
+const Tags = () => {
+    const tagsList = [{
+        id: 1,
+        tagName: "javascript",
+        tagDesc: "For questions regarding programming in ECMAScript (JavaScript/JS) and its various dialects/implementations (excluding ActionScript). Please include all relevant tags on your question;",
+    },{
+        id: 2,
+        tagName: "python",
+        tagDesc: "Python is a multi-paradigm, dynamically typed, multipurpose programming language. It is designed to be quick to learn, understand, and use, and enforces a clean and uniform syntax."
+    },{
+        id: 3,
+        tagName: "c#",
+        tagDesc: "C# (pronounced 'see sharp') is a high level, statically typed, multi-paradigm programming language developed by Microsoft"
+    },{
+        id: 4,
+        tagName: "java",
+        tagDesc: "Java is a high-level object oriented programming language. Use this tag when you're having problems using or understanding the language itself. "
+    },{
+        id: 5,
+        tagName: "php",
+        tagDesc: "PHP is a widely used, open source, general-purpose, multi-paradigm, dynamically typed and interpreted scripting language originally designed for server-side web development"
+    },{
+        id: 6,
+        tagName: "html",
+        tagDesc: "HTML (HyperText Markup Language) is the markup language for creating web pages and other information to be displayed in a web browser."
+    },{
+        id: 7,
+        tagName: "android",
+        tagDesc: "Android is Google's mobile operating system, used for programming or developing digital devices (Smartphones, Tablets, Automobiles, TVs, Wear, Glass, IoT)."
+    },{
+        id: 8,
+        tagName: "css",
+        tagDesc: "CSS is a representation style sheet language used for describing the look and formatting of HTML, XML documents and SVG elements including colors, layout, fonts, and animations"
+    },{
+        id: 9,
+        tagName: "Reactjs",
+        tagDesc: "React is a JavaScript library for building user interfaces. It uses a declarative, component-based paradigm and aims to be both efficient and flexible."
+    },{
+        id: 10,
+        tagName: "node.js",
+        tagDesc: "Node.js is an event-based, non-blocking, asynchronous I/O runtime that uses Google's V8 JavaScript engine and libuv library. "
+    }] 
+
+  return (
+    <div className='home-container-1'>
+          <LeftSidebar/>
+          <div className = 'home-container-2'>
+            <h1 className='tags-h1'>Tags</h1>
+            <p className='tags-p'>A tag is a keyword or label that categorizes your question with other, similar questions.</p>
+            <p className='tags-p'>Using the right tags makes it easier for others to find and answer your question.</p>
+            <div className='tags-list-container'>
+                  {
+                      tagsList.map((tag) => (
+                          <TagsList tag={tag} key={tagsList.id} />
+                      ))
+                  }
+            </div>
+          </div>
+    </div>
+  )
+}
+
+export default Tags
+import React from 'react'
+import './Tags.css'
+const TagsList = ({tag}) => {
+  return (
+    <div className='tag'>
+        <h5>{ tag.tagName }</h5>
+        <p>{ tag.tagDesc }</p>
+    </div>
+  )
+}
+
+export default TagsList
+import React,{useState} from 'react'
+import {useDispatch} from 'react-redux'
+import {updateProfile}  from '../../actions/users'
+const EditProfileForm = ({ currentUser, setSwitch }) => {
+    const [name, setName] = useState(currentUser?.result?.name)
+    const [about, setAbout] = useState(currentUser?.result?.about)
+    const [tags, setTags] = useState(currentUser?.result?.tags)
+    const dispatch = useDispatch()
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        setTags(tags.split(' '))
+        if (tags.length === 0) {
+            dispatch(updateProfile(currentUser?.result._id, { name, about, tags: tags }))
+        } else {
+            dispatch(updateProfile(currentUser?.result._id, { name, about, tags }))
+        }
+        setSwitch(false)
+    }
+  return (
+    <div>
+        <h1 className='edit-profile-title'> Edit your Profile</h1>
+        <h2 className='edit-profile-title-2'>Public Information</h2>
+        <form onSubmit={handleSubmit} className="edit-profile-form">
+        <label htmlFor="name">
+            <h3>Display Name</h3>
+            <input type="text" name="" id="name" value={name} onChange={(e)=>setName(e.target.value)} />
+        </label>
+        <label htmlFor="about">
+            <h3>About Me</h3>
+            <textarea cols="30" rows="10" name="" id="about" value={about} onChange={(e)=>setAbout(e.target.value)} />
+        </label>
+        <label htmlFor="ags">
+            <h3>Watched Tags</h3>
+            <input type="text" name="" id="tags" value={tags} onChange={(e)=>setTags(e.target.value)} />
+        </label><br />
+        <input type="submit" value="Save Profile" className='user-submit-btn'/><br />
+        <button type='button' className='user-cancel-btn' onClick={ ()=> setSwitch(false) }> Cancel </button>
+        </form>
+    </div>
+  )      
+}
+
+export default EditProfileForm
+import React from 'react'
+
+const ProfileBio = ({currentProfile}) => {
+  return (
+      <div>
+          <h4>Reputations : { currentProfile.reputations}</h4>
+        <div>
+            {
+                currentProfile.tags ? (
+                    <>
+                        <h4> Tags Watched</h4>
+                        {
+                            currentProfile?.tags.map((tag) => (
+                                <p key={ tag }>{ tag }</p>
+                            ))
+                        }
+                    </>
+                ) : (
+                        <p>0 tags watched </p>
+                )
+            }
+          </div>
+          <div>
+              {
+                  currentProfile?.about ? (
+                      <>
+                        <h4>About</h4>
+                          <p>{ currentProfile.about}</p>
+                      </> 
+                  ) : (
+                       <p>No bio found</p>   
+                  )
+              }
+          </div>
+    </div>
+  )
+}
+
+export default ProfileBio
+.user-details-container{
+  width: 100%;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content:center;
+}
+
+.user-details{
+  display: flex;
+  align-items: center;
+}
+
+.user-name{
+  padding-left: 20px;
+}
+.user-name p {
+  color: #7e7e7e;
+}
+.edit-profile-btn{
+  padding: 8px 10px;
+  border: solid 1px #7e7e7e;
+  border-radius: 2px;
+  background-color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.edit-profile-btn:hover{
+  background-color: #f5f9fc;
+}
+.edit-profile-title{
+  padding: 20px 0px;
+  border-bottom: solid 1px #dbd9d9;
+}
+.edit-profile-title-2{
+  color: grey;
+  font-weight: 400;
+}
+.edit-profile-form {
+  padding: 20px;
+  border: solid 1px #dbd9d9;
+  border-radius: 5px;
+}
+.edit-profile-form label h3{
+  margin: 0%;
+  padding: 3px 0px;
+}
+.edit-profile-form label p{
+  margin: 0%;
+  padding: 3px 0px;
+}
+.edit-profile-form label input, .edit-profile-form label textarea{
+  padding: 5px;
+  margin-bottom: 20px;
+  border: solid 1px #dbd9d9;
+  width: 50%;
+}
+
+.user-submit-btn{
+  padding: 14px 10px;
+  background-color: #0a95ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.user-submit-btn:hover{
+  background-color: #0074cc;
+}
+
+.user-cancel-btn{
+  padding: 14px 10px;
+  color: #0a95ff;
+  background-color: transparent;
+  border: none;
+  margin-left: 10px;
+  cursor: pointer;
+}
+import React,{useState} from 'react'
+import LeftSidebar from '../../components/LeftSidebar/LeftSidebar'
+import Avatar from '../../components/Avatar/Avatar'
+import { useSelector } from 'react-redux'
+import { useParams } from 'react-router'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBirthdayCake } from '@fortawesome/free-solid-svg-icons'
+import { faPen } from '@fortawesome/free-solid-svg-icons'
+import moment from 'moment'
+import ProfileBio from './ProfileBio'
+import EditProfileForm from './EditProfileForm'
+import './UserProfile.css'
+
+const UserProfile = () => {
+    const {id}  = useParams()
+    const users = useSelector((state) => state.usersReducer)
+    const currentProfile = users.filter((user)=>user._id === id)[0]
+    const currentUser = useSelector( (state) => state.currentUserReducer)
+
+    const [ Switch, setSwitch] = useState(false)
+
+    const handleSwitch = () => {
+        setSwitch(!Switch)
+    }
+    return (
+        <div className='home-container-1'>
+            <LeftSidebar/>
+            <div className="home-container-2">
+                <section>
+                    <div className="user-details-container">
+                        <div className="user-details">
+                            <Avatar
+                                backgroundColor='purple'
+                                fontSize='50px'
+                                px='40px'
+                                py='30px'
+                            >
+                                {currentProfile?.name.charAt(0).toUpperCase()}
+                            </Avatar>
+                            <div className="user-name">
+                                <h1>{currentProfile?.name}</h1>
+                                <p><FontAwesomeIcon icon={faBirthdayCake} />
+                                Joined { moment(currentProfile?.joinedOn).fromNow()}
+                                </p>
+                            </div>
+                        </div>  
+                        {
+                            currentUser?.result._id === id && (
+                                <button type='button' onClick={handleSwitch} className='edit-profile-btn'>
+                                    <FontAwesomeIcon icon={faPen}/> Edit Profile
+                                </button>
+                            )
+                        }
+                    </div>
+                    <>
+                    {
+                        Switch ? (
+                            <EditProfileForm currentUser={currentUser} setSwitch={setSwitch}/>
+                        ) : (
+                            <ProfileBio currentProfile={currentProfile}/>
+                        )
+                    }
+                    </>
+                </section>  
+            </div>
+        </div>
+  )
+}
+
+export default UserProfile
+import React from 'react'
+import { Link } from 'react-router-dom'
+import './Users.css'
+
+const User = ({user}) => {
+    return (
+        <Link to={`/Users/${user._id}`} className='user-profile-link'>
+            <h3>{user.name.charAt(0).toUpperCase()}</h3>
+            <h5>{user.name}</h5>
+        </Link>
+    )
+}
+
+export default User
+.user-list-container{
+  padding: 30px 0px;
+  /* display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); */
+  display: flex;
+  flex-direction: row;
+  flex-wrap:wrap;
+  gap: 50px;
+}
+
+.user-profile-link{
+  display: flex;
+  align-items: center;
+  justify-content:flex-start;
+  text-decoration: none;
+  color: black;
+}
+
+.user-profile-link h3{
+  padding: 10px 13px;
+  background-color: #d3d3d3;
+  border-radius: 50%;
+}
+
+.user-profile-link h5{
+  margin: 0px 10px;
+}
+import React from 'react'
+import LeftSidebar from '../../components/LeftSidebar/LeftSidebar'
+import UsersList from './UsersList'
+import './Users.css'
+const Users = () => {
+
+  return (
+    <div className='home-container-1'>
+      <LeftSidebar />
+      <div className='home-container-2' style={{marginTop: "30px"}}>
+        <h1 style={{fontWeight: "400"}}>Users</h1>
+        <UsersList />
+      </div>
+    </div>
+  )
+}
+
+export default Users
+
+import React from 'react'
+import {useSelector} from 'react-redux'
+import User from './User'
+import './Users.css'
+const UsersList = () => {
+  const users = useSelector((state) => (state.usersReducer))
+  return (
+    <div className='user-list-container'>
+          {
+              users.map((user) => (
+                    <User user={user} key={user._id}/>
+              ))
+          }
+    </div>
+  )
+}
+
+export default UsersList
+const authReducer = (state = {data:null}, action) => {
+  switch (action.type) {
+      case 'AUTH':
+          localStorage.setItem('Profile',JSON.stringify({...action?.data}))
+          return {...state,data:action?.data}
+          // break;
+      
+      case 'LOGOUT':
+          localStorage.clear()
+          return {...state, data:null}
+      
+      default:
+          return state
+          // break;
+  }
+}
+
+export default authReducer
+const currentUserReducer = (state = null, action) => {
+  switch (action.type) {
+      case 'FETCH_CURRENT_USER':
+          return action.payload
+  
+      default:
+          return state
+  }
+}
+export default currentUserReducer
+import {combineReducers} from 'redux'
+import authReducer from './auth'
+import currentUserReducer from './currentUser'
+import questionReducer from './questions'
+import usersReducer from './users'
+
+export default combineReducers({
+    authReducer,currentUserReducer,questionReducer,usersReducer
+})
+const questionReducer = (state = { data: null }, action) => {
+  switch (action.type) {
+      case "POST_QUESTION":
+          return { ...state }
+      case "POST_ANSWER":
+          return { ...state }
+      case "FETCH_ALL_QUESTIONS":
+          return { ...state, data: action.payload }
+      default:
+          return state
+  }
+}
+export default questionReducer
+const usersReducer = (states = [], action) => {
+  switch (action.type) {
+      case 'FETCH_USERS':
+          return action.payload;
+      case 'UPDATE_CURRENT_USER':
+          return states.map((state)=> state._id === action.payload._id ? action.payload : state)
+      default:
+          return states
+  }
+}
+
+export default usersReducer
+.home-container-1{
+  min-height: 100vh;
+  max-width: 1250px;
+  width: 100%;
+  display: flex;
+  justify-content:stretch;
+  margin: 0% auto;
+}
+
+.home-container-2{
+  max-width: 1100px;
+  width: calc(100%-164px);
+  border: 1px solid #d6d9dc;
+  padding: 20px 24px;
+  box-sizing: border-box;
+}
+html, body {
+  overflow-x: hidden;
+}
+body {
+position: relative
+}
+@media (min-width:400px) {
+html, body {
+  overflow-x:auto;
+}
+}
+.home-container-1{
+    min-height: 100vh;
+    max-width: 1250px;
+    width: 100%;
+    display: flex;
+    justify-content:stretch;
+    margin: 0% auto;
+}
+
+.home-container-2{
+    max-width: 1100px;
+    width: calc(100%-164px);
+    border: 1px solid #d6d9dc;
+    padding: 20px 24px;
+    box-sizing: border-box;
+}
+html, body {
+    overflow-x: hidden;
+  }
+body {
+  position: relative
+}
+@media (min-width:400px) {
+  html, body {
+    overflow-x:auto;
+  }
+}
+import './App.css';
+import Navbar from './components/Navbar/Navbar';
+import Routing from './Routing';
+import { BrowserRouter as Router } from 'react-router-dom' 
+import {useEffect} from 'react'
+import { fetchAllQuestions } from './actions/question';
+import {useDispatch} from 'react-redux'
+import { fetchAllUsers } from './actions/users';
+import Chatbot from './components/Chatbot/Chatbot';
+ 
+function App() {
+
+  const dispatch = useDispatch()
+  
+  useEffect(() => {
+    dispatch(fetchAllQuestions())
+    dispatch(fetchAllUsers())
+  }, [dispatch])
+  
+  return (
+    <div className="App">
+      <Router >
+        <Navbar />
+        <Routing />
+      </Router >
+      <Chatbot/>
+    </div>
+  );
+}
+
+export default App;
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import {Provider} from 'react-redux'
+import {createStore, applyMiddleware, compose} from 'redux'
+import thunk from 'redux-thunk'
+import Reducers from './reducers/index'
+const store = createStore(Reducers, compose(applyMiddleware(thunk)))
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+    <Provider store={store}>
+      <App />
+    </Provider>
+    
+);
+import React from 'react'
+import {Routes,Route} from "react-router-dom";
+import AskQuestion from './pages/AskQuestion/AskQuestion';
+import Auth from './pages/Auth/Auth';
+import Home from './pages/Home/Home'
+import DisplayQuestion from './pages/Questions/DisplayQuestion';
+import Questions from './pages/Questions/Questions';
+import Tags from './pages/Tags/Tags';
+import Users from './pages/Users/Users';
+import UserProfile from './pages/UserProfile/UserProfile';
+import Plans from './pages/Plans/Plans';
+import Success from './pages/Plans/Success';
+import Failure from './pages/Plans/Failure';
+import StripeForm from './pages/Payment/StripeForm';
+
+import SMHome from './pages/SocialMedia/Home/SMHome'
+import SMUsers from './pages/SocialMedia/User/SMUsers'
+import EditProfile from './pages/SocialMedia/User/EditProfile';
+import Profile from './pages/SocialMedia/User/Profile';
+// import PrivateRoute from './api/PrivateRoute';
+
+const Routing = () => {
+  return (    
+    <Routes>
+      <Route path='/' element={<Home />}/>
+      <Route path='/Auth' element={<Auth />}/>
+      <Route path='/Questions' element={<Questions />}/>
+      <Route path='/AskQuestion' element={<AskQuestion />}/>
+      <Route path='/Questions/:id' element={<DisplayQuestion />}/>
+      <Route path='/Tags' element={< Tags />}/>
+      <Route path='/Users' element={< Users />}/>
+      <Route path='/Users/:id' element={< UserProfile />}/>
+      <Route path='/Plans' element={< Plans />}/>
+      <Route path='/Payment' element={< StripeForm />}/>
+      <Route path='/Success' element={< Success />}/>
+      <Route path='/Failure' element={< Failure />} />
+      
+      <Route path="/SocialMedia" element={<SMHome />} />
+      <Route path="/SocialMedia/Users" element={<SMUsers/>}/>
+      <Route path="/SocialMedia/User/edit/:userId" element={<EditProfile/>}/>
+      <Route path="/SocialMedia/User/:userId" element={<Profile/>}/>
+    </Routes>
+  )
+}
+
+export default Routing
+const config = {
+  jwtSecret: process.env.JWT_SECRET || "test",
+  mongoUri:
+    process.env.CONNECTION_URL
+      ||
+    'mongodb://localhost:27017/stackoverflowclone'
+}
+export default config
+import * as tf from '@tensorflow/tfjs';
+import {loadLayersModel} from '@tensorflow/tfjs';
+// Load the pre-trained model
+const model = await tf.loadLayersModel('https://storage.googleapis.com/tfjs-models/tfjs/sentiment_cnn_v1/model.json');
+
+// Define a function to preprocess the text input
+function preprocess(text) {
+  return text.trim().toLowerCase().replace(/(\.|\,|\!)/g, '').split(' ');
+}
+
+// Define a function to perform sentiment analysis on the input text
+function predictSentiment(text) {
+  // Preprocess the input text
+  const inputText = preprocess(text);
+  
+  // Convert the preprocessed text to a tensor
+  const inputTensor = tf.tensor2d(inputText, [1, inputText.length]);
+  
+  // Make a prediction with the pre-trained model
+  const prediction = model.predict(inputTensor);
+  
+  // Get the predicted sentiment as a number
+  const sentimentScore = prediction.dataSync()[0];
+  
+  // Return the sentiment score (positive or negative)
+  return sentimentScore > 0 ? 'positive' : 'negative';
+}
+
+// Test the function with an example sentence
+const sentence = 'This movie was great!';
+console.log(predictSentiment(sentence)); // Output: 'positive'
+import mongoose from 'mongoose'
+import Questions from '../models/Questions'
+import User from '../models/auth'
+import { updateReputations } from './reputation'
+
+export const postAnswer = async (req, res) => {
+    // const { id: _id } = req.params
+    const _id = req.params.id.substring(1,req.params.id.length)
+    // .id.substring(1,req.params.id.length)
+    // console.log(_id);
+    const {noOfAnswers, answerBody, userAnswered, userId} = req.body
+    // console.log('ctrl answers postAnswer',req.body)
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+        return res.status(404).send('question unavailable')
+    }
+    updateNoOfQuestions( _id, noOfAnswers)
+    try {
+        const updatedQuestion = await Questions.findByIdAndUpdate(_id, { $addToSet: { 'answer': [{ answerBody, userAnswered, userId }] } })
+        res.status(200).send(updatedQuestion)
+    } catch (error) {
+        res.status(404).send('controllers answers postAnswer',error)
+    }
+}
+
+const updateNoOfQuestions = async (_id, noOfAnswers) => {
+    try {
+        await Questions.findByIdAndUpdate(_id, {$set: {'noOfAnswers':noOfAnswers}})    
+    } catch (error) {
+        console.log('controllers answers updateNoOfQuestions',error)
+    }
+}
+
+export const deleteAnswer = async (req,res) => {
+    const _id = req.params.id.substring(1,req.params.id.length)
+    const { answerId, noOfAnswers } = req.body
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+        return res.status(404).send('question unavailable')
+    }
+    if (!mongoose.Types.ObjectId.isValid(answerId)) {
+        return res.status(404).send('answer unavailable')
+    }
+    updateNoOfQuestions(_id, noOfAnswers)
+    try {
+        await Questions.updateOne(
+            { _id },
+            { $pull:{'answer':{_id: answerId}}}
+        )
+        res.status(200).send({message:'answer successfully deleted'})
+    } catch (error) {
+        
+    }
+}
+
+export const addReply = async (req,res) => {
+    const _id = req.params.id.substring(1,req.params.id.length)
+    const { userId, answerId, reply } = req.body
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+        return res.status(404).send('question unavailable')
+    }
+    if (!mongoose.Types.ObjectId.isValid(answerId)) {
+        return res.status(404).send('answer unavailable')
+    }
+    try {
+        const user = await User.findById(userId)
+        const question = await Questions.findById(_id)
+        // console.log(question['answer']);
+        // const sentence = 'This movie was great!';
+        var userAnswered = ''
+        for (const answer of question.answer) {
+            if (answer['_id'] == answerId) {
+                userAnswered = answer["userId"]
+                answer['replies'].push({userId:userId,userAnswered:user.name,reply:reply})
+            }
+        }
+        // console.log(question['answer'])
+        await Questions.updateOne(
+            { _id },
+            { $set:{'answer':question.answer}}
+        )
+        await updateReputations(userAnswered,reply)
+        res.status(200).send({message:'reply added successfully'})
+        } catch (error) {
+            res.status(500).send({message:error+'reply failed to add'})
+        }
+}
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
+import expressJwt from 'express-jwt'
+import users from '../models/auth'
+import config from '../config/config'
+
+const signup = async (req, res) => {
+    const { name, email, password } = req.body
+    try {
+        const user = await users.findOne({ email })
+        if (user) {
+            return res.status(404).send({message:"User already exists."})
+        }
+        // const hashedPassword = await bcrypt.hash(password,12)
+        const newUser = new users({
+          name: name,
+          email: email,
+          password: password
+        })
+        await newUser.save()
+        // const token = jwt.sign({ email: newUser.email, id: newUser._id }, "test",{expiresIn:'1h'})
+        const token = jwt.sign({ email: newUser.email, _id: newUser._id }, process.env.JWT_SECRET,{expiresIn:'24h'})
+        res.status(200).send({user: {_id: newUser._id, name: newUser.name, email: newUser.email},result:newUser,token})
+
+    } catch (error) {
+        res.status(500).send({message:error+' auth - controller signup'})
+    }
+}
+const login = async (req, res) => {
+    const { email, password } = req.body
+    try {
+        const user = await users.findOne({ email })
+        // console.log('login auth.js controllers',user);
+        if (!user) {
+            return res.status(404).json({error:"User Doesn't exist."})
+        }
+
+        // const isPasswordCrt = await bcrypt.compare(password,user.password)
+        if (!user.authenticate(password)) {
+            return res.status(401).send({error:'Invalid Credentials'})
+        }
+        const token = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET || 'test',{expiresIn:'24h'})
+        res.cookie("t", token, {
+            expire: new Date() + 9999
+          })
+        res.status(200).json({ user: {_id: user._id, name: user.name, email: user.email},result: user, token })
+        
+    } catch (error) {
+        res.status(500).send({message:error+' auth - controller login'})
+    }
+}
+
+const signout = (req, res) => {
+    res.clearCookie("t")
+    return res.status('200').json({
+      message: "signed out"
+    })
+  }
+  
+  const requireSignin = expressJwt({
+    secret: config.jwtSecret,
+    userProperty: 'auth'
+  })
+  
+  const hasAuthorization = (req, res, next) => {
+    const authorized = req.profile && req.auth && req.profile._id == req.auth._id
+    if (!(authorized)) {
+      return res.status('403').json({
+        error: "User is not authorized"
+      })
+    }
+    next()
+  }
+  
+export {
+    login,
+    signup,
+    signout,
+    requireSignin,
+    hasAuthorization
+  }
+  import OTP from '../models/otp'
+import User from '../models/auth'
+import Mailer from '../utilities/mailer'
+
+export const generateOTP = async (req, res) => {
+    try {
+	    var user = await User.findOne({email: req.body.email})
+	    if (user) {
+	        console.log('server ctrl genOTP genOTP');
+	        if(!await OTP.findOne({email: req.body.email})){
+	            var otp = new OTP({
+	            email: req.body.email,
+	            otp: (Math.floor((Math.random()*10000)+1)).toString(),
+	            expiresIn: new Date().getTime() + 300*1000
+	            })
+	            await otp.save()
+	        } else {
+	            var otp = await OTP.findOneAndUpdate({email: req.body.email},{
+	                otp: Math.floor((Math.random()*10000)+1),
+	                expiresIn: new Date().getTime() + 300*1000
+	            },
+	            {returnDocument:'after'})
+	        }
+	        const otpStatus = Mailer(otp)
+	        if (otpStatus){
+	            return res.status(200).send({message:'Mail Sent Successfully'})
+	        }else {
+	            return res.status(500).send({message:'Sending Mail failed'})
+	        }
+	    } else {
+	        return res.status(500).send({message:'User Not Found, Please register'})
+	    }
+    } catch (error) {
+        return res.status(500).send({message:error})
+	}
+}
+
+export const verifyOTP = async (req, res) => {
+    try {
+		var user = await OTP.findOne({ email: req.body.email })
+		if (user) {
+			if(req.body.recvOTP === user.otp){
+				return res.status(200).send({message:true})
+			}
+			else{
+				return res.status(500).send({message:false})
+			}
+		}else {
+			return res.status(500).send({message:'Retry'})
+		}
+    } catch (error) {
+    	return res.status(500).send({message:'Retry'+error})
+    }
+}
+import Post from '../models/post'
+import errorHandler from './../helpers/dbErrorHandler'
+import formidable from 'formidable'
+import fs from 'fs'
+
+const create = (req, res, next) => {
+  let form = new formidable.IncomingForm()
+  form.keepExtensions = true
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      return res.status(400).json({
+        error: "Image could not be uploaded"
+      })
+    }
+    let post = new Post(fields)
+    post.postedBy= req.profile
+    if(files.photo){
+      post.photo.data = fs.readFileSync(files.photo.filepath)
+      post.photo.contentType = files.photo.type
+    }
+    try {
+      let result = await post.save()
+      res.json(result)
+    }catch (err){
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+  })
+}
+
+const postByID = async (req, res, next, id) => {
+  try{
+    let post = await Post.findById(id).populate('postedBy', '_id name').exec()
+    if (!post)
+      return res.status(400).json({
+        error: "Post not found"
+      })
+    req.post = post
+    next()
+  }catch(err){
+    return res.status(400).json({
+      error: "Could not retrieve use post"
+    })
+  }
+}
+
+const listByUser = async (req, res) => {
+  try{
+    let posts = await Post.find({postedBy: req.profile._id})
+                          .populate('comments.postedBy', '_id name')
+                          .populate('postedBy', '_id name')
+                          .sort('-created')
+                          .exec()
+    res.json(posts)
+  }catch(err){
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+const listNewsFeed = async (req, res) => {
+  let following = req.profile.following
+  following.push(req.profile._id)
+  try{
+    let posts = await Post.find({postedBy: { $in : req.profile.following } })
+                          .populate('comments.postedBy', '_id name')
+                          .populate('postedBy', '_id name')
+                          .sort('-created')
+                          .exec()
+    res.json(posts)
+  }catch(err){
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+const remove = async (req, res) => {
+  let post = req.post
+  try{
+    let deletedPost = await post.remove()
+    res.json(deletedPost)
+  }catch(err){
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+const photo = (req, res, next) => {
+    res.set("Content-Type", req.post.photo.contentType)
+    return res.send(req.post.photo.data)
+}
+
+const like = async (req, res) => {
+  try{
+    let result = await Post.findByIdAndUpdate(req.body.postId, {$push: {likes: req.body.userId}}, {new: true})
+    res.json(result)
+  }catch(err){
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+  }
+}
+
+const unlike = async (req, res) => {
+  try{
+    let result = await Post.findByIdAndUpdate(req.body.postId, {$pull: {likes: req.body.userId}}, {new: true})
+    res.json(result)
+  }catch(err){
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+const comment = async (req, res) => {
+  let comment = req.body.comment
+  comment.postedBy = req.body.userId
+  try{
+    let result = await Post.findByIdAndUpdate(req.body.postId, {$push: {comments: comment}}, {new: true})
+                            .populate('comments.postedBy', '_id name')
+                            .populate('postedBy', '_id name')
+                            .exec()
+    res.json(result)
+  }catch(err){
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+const uncomment = async (req, res) => {
+  let comment = req.body.comment
+  try{
+    let result = await Post.findByIdAndUpdate(req.body.postId, {$pull: {comments: {_id: comment._id}}}, {new: true})
+                          .populate('comments.postedBy', '_id name')
+                          .populate('postedBy', '_id name')
+                          .exec()
+    res.json(result)
+  }catch(err){
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+const isPoster = (req, res, next) => {
+  let isPoster = req.post && req.auth && req.post.postedBy._id == req.auth._id
+  if(!isPoster){
+    return res.status('403').json({
+      error: "User is not authorized"
+    })
+  }
+  next()
+}
+
+export default {
+  listByUser,
+  listNewsFeed,
+  create,
+  postByID,
+  remove,
+  photo,
+  like,
+  unlike,
+  comment,
+  uncomment,
+  isPoster
+}
+import Questions from '../models/Questions'
+import mongoose from 'mongoose'
+import User from '../models/auth'
+export const AskQuestion = async (req, res) => {
+    const postQuestionData = req.body
+    const { noOfQuestions, planOpted } = await User.findById(postQuestionData.userId)
+
+    try {
+        if (noOfQuestions > 0){
+            await new Questions(postQuestionData).save()
+            await User.findByIdAndUpdate(postQuestionData.userId,{$inc:{noOfQuestions:-1}})
+            res.status(200).send("posted a question successfully")
+        } else {
+            res.status(409).send("Per Day Question Limit reached")
+        }
+    } catch (error) {
+        console.log('question.js controllers',error);
+        res.status(409).send("Couldn't post a question")
+    }
+}
+
+export const getAllQuestions = async (req, res) => {
+    try {
+        const questionList = await Questions.find()    
+        res.status(200).send(questionList)
+    } catch (error) {
+        console.log('controllers questions.js getAllQuestions',error);
+    }
+}
+
+export const deleteQuestion = async (req, res) => {
+    const _id = req.params.id.substring(1,req.params.id.length)
+    
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+        return res.status(404).send('question unavailable')
+    }
+    
+    try {
+        await Questions.findByIdAndRemove(_id)
+        return res.status(404).send('successfully question removed')
+    } catch (error) {
+        res.status(404).send({message:error.message})
+    }
+}
+
+export const voteQuestion = async (req, res) => {
+    const _id = req.params.id
+    const { value, userId } = req.body
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+        return res.status(404).send('question unavailable')
+    }
+    try {
+        const question = await Questions.findById(_id)
+        const upIndex = question.upVote.findIndex(id => id === String(userId))
+        const downIndex = question.downVote.findIndex(id=> id === String(userId))
+        
+        if(value === 'upVote'){
+            if (downIndex !== -1){
+                question.downVote = question.downVote.filter( id => id !== String(userId))
+            }
+            if (upIndex === -1){
+                question.upVote.push(userId)
+            } else {
+                question.upVote = question.upVote.filter( id => id !== String(userId))
+            }
+        }
+        else if (value === 'downVote') {
+            if (upIndex !== -1){
+                question.upVote = question.upVote.filter( id => id !== String(userId))
+            }
+            if (downIndex === -1){
+                question.downVote.push(userId)
+            } else {
+                question.downVote = question.downVote.filter( id => id !== String(userId))
+            }
+        }
+        await Questions.findByIdAndUpdate(_id, question)
+    } catch (error) {
+        console.log('controllers questions.js voteQuestion',error);
+    }
+}
+import * as tf from '@tensorflow/tfjs-node';
+import User from '../models/auth'
+import mongoose, { isValidObjectId } from 'mongoose'
+import fetch from 'node-fetch'
+const _model = async () => {
+    const model = await tf.loadLayersModel('https://storage.googleapis.com/tfjs-models/tfjs/sentiment_cnn_v1/model.json');
+    return model;
+}
+const _metadata  = async() =>{
+    const data = await fetch("https://storage.googleapis.com/tfjs-models/tfjs/sentiment_cnn_v1/metadata.json")
+    return data.json()
+}
+const predictSentiment  = async(text) =>{
+    const metadata = await _metadata();
+    const model = await _model();
+    const trimmed = text.trim().toLowerCase().replace(/(\.|\,|\!)/g, '').split(' ');
+    const inputBuffer = tf.buffer([1, metadata.max_len], "float32");
+    trimmed.forEach((word, i) => inputBuffer.set(metadata.word_index[word] + metadata.index_from, 0, i));
+    const input = inputBuffer.toTensor();
+    const predictOut = model.predict(input);
+    return predictOut.dataSync()[0];
+}
+export const updateReputations = async (userId, reply) => {
+    const user = await User.findById(userId);
+    // console.log('updateReputations');
+    const pred = await predictSentiment(reply);
+    // console.log(pred);
+    if (pred > 0.6)
+        await User.findByIdAndUpdate(userId, { $inc: { reputations: 5 } });
+    else {
+        await User.findByIdAndUpdate(userId,{ $inc: { reputations :-1 } })
+    }
+    // console.log('after update');
+    return
+}
+import axios from 'axios'
+
+// base url
+const baseUrl = 'https://api.stackexchange.com/2.2/search/advanced';
+// default params
+const site = 'stackoverflow';
+const filter = '!)rTkraPXy17fPqpx7wE5';
+const pageSize = 10;
+/**
+ *
+ * @param encodedString - string to decode
+ * @return decodedSring
+ */
+const decodeEntities = encodedString => {
+	const translate_re = /&(nbsp|amp|quot|lt|gt);/g;
+	const translate = {
+		nbsp: ' ',
+		amp: '&',
+		quot: '"',
+		lt: '<',
+		gt: '>'
+	};
+	return encodedString
+		.replace(translate_re, (match, entity) => {
+			return translate[entity];
+		})
+		.replace(/&#(\d+);/gi, (match, numStr) => {
+			const num = parseInt(numStr, 10);
+			return String.fromCharCode(num);
+		});
+};
+
+/**
+ *
+ * @param question - user inputed question
+ * @param flags - user provided flags
+ */
+const searchStackOverflow = async (req, res) => {
+	// console.log('start searchStackOverflow server ctrl searchStackOverflow searchStackOverflow ');
+	const order = 'desc';
+	let sort= `votes`
+	let question = req.body.question
+	// console.log(question);
+	if (question === '') {
+		return res.status(300).send({message:'You did not enter a question. Please enter one'});
+	}
+	try {
+		// console.log('inside try searchStackOverflow server ctrl searchStackOverflow searchStackOverflow');
+		const { data } = await axios.get(
+			`${baseUrl}?order=${order}&sort=${sort}&q=${question}&pageSize=${pageSize}&site=${site}&filter=${filter}`
+			);
+		// console.log('after fetching search results searchStackOverflow server ctrl searchStackOverflow searchStackOverflow');
+		for (const [key, value] of Object.entries(data['items'])) {
+            let item = value['body_markdown'];
+			data['items'][key]['body_markdown'] = decodeEntities(item).split(
+                '\r\n'
+                );
+			data['items'][key]['body'] = [];
+		}
+		let { items } = data;
+		let basicInfoOfQuestions = [];
+		items = Object.keys(items).map(key => {
+			return items[key];
+		})
+		// console.log(items)
+		items.map(item => {
+			basicInfoOfQuestions.push({
+				title: typeof(item.title) === 'undefined' ? '' : item.title,
+				body: format(item.body_markdown),
+				answers: threadAns(item.answers)
+			});
+		});
+        // console.log('search results searchStackOverflow server ctrl searchStackOverflow searchStackOverflow',basicInfoOfQuestions)
+        return res.status(200).send({message:basicInfoOfQuestions});
+	} catch (err) {
+        console.log('server ctrl searchStackOverflow searchStackOverflow',err);
+        return res.status(500).send({message:err});
+	}
+}
+
+/**
+ *
+ * @param thread - stackoverflow thread for answers
+ * @return - array of answers of the threads
+ */
+const threadAns = thread => {
+	const temp = [];
+	if (typeof thread === 'undefined') {
+		return temp;
+	}
+
+	thread.map(ans => {
+		temp.push(ans.body_markdown);
+	});
+	return temp;
+};
+
+/**
+ *
+ * @param question - thread question
+ * @return body - formated body
+ */
+const format = question => {
+	let body = '';
+
+	question.map(index => {
+		body += `${index}\n`;
+	});
+
+	return body;
+};
+export default searchStackOverflow;
+import User from '../models/auth'
+import mongoose from 'mongoose'
+import extend from 'lodash/extend'
+import errorHandler from './../helpers/dbErrorHandler'
+import formidable from 'formidable'
+import fs from 'fs'
+// import profileImage from '../../client/src/assets/profile-pic.png'
+
+export const getAllUsers = async (req, res) => {
+    try {
+        const allUsers = await User.find()
+        const allUserDetails = []
+        allUsers.forEach(users => {
+            allUserDetails.push({...users._doc})
+        });
+        // console.log(allUserDetails)
+        res.status(200).send(allUserDetails)
+    } catch (error) {
+        console.log('controllers, users getAllUsers',error);
+    }
+}
+
+export const updateProfile = async (req, res) => {
+    const _id = req.params.id
+    const { name, about, tags } = req.body
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+        return res.status(404).send('question unavailable')
+    }
+    try {
+        const updatedProfile = await User.findByIdAndUpdate(_id,{$set:{'name':name,'about':about,'tags':tags}},{new:true})
+        res.status(200).send(updatedProfile)
+    } catch (error) {
+        console.log('controllers, users updateProfile',error);
+    }
+}
+
+const create = async (req, res) => {
+    const user = new User(req.body)
+    try {
+      await user.save()
+      return res.status(200).json({
+        message: "Successfully signed up!"
+      })
+    } catch (err) {
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+  }
+  
+  /**
+   * Load user and append to req.
+   */
+  const userByID = async (req, res, next, id) => {
+    try {
+      let user = await User.findById(id).populate('following', '_id name')
+      .populate('followers', '_id name')
+      .exec()
+      if (!user)
+        return res.status('400').json({
+          error: "User not found"
+        })
+      req.profile = user
+      next()
+    } catch (err) {
+      return res.status('400').json({
+        error: "Could not retrieve user"
+      })
+    }
+  }
+  
+  const read = (req, res) => {
+    req.profile.hashed_password = undefined
+    req.profile.salt = undefined
+    return res.json(req.profile)
+  }
+  
+  const list = async (req, res) => {
+    try {
+      let users = await User.find().select('name email updated created')
+      res.json(users)
+    } catch (err) {
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+  }
+  
+  const update = (req, res) => {
+    let form = new formidable.IncomingForm()
+    form.keepExtensions = true
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        return res.status(400).json({
+          error: "Photo could not be uploaded"
+        })
+      }
+      let user = req.profile
+      user = extend(user, fields)
+      user.updated = Date.now()
+      if(files.photo){
+        user.photo.data = fs.readFileSync(files.photo.path)
+        user.photo.contentType = files.photo.type
+      }
+      try {
+        await user.save()
+        user.hashed_password = undefined
+        user.salt = undefined
+        res.json(user)
+      } catch (err) {
+        return res.status(400).json({
+          error: errorHandler.getErrorMessage(err)
+        })
+      }
+    })
+  }
+  
+  const remove = async (req, res) => {
+    try {
+      let user = req.profile
+      let deletedUser = await user.remove()
+      deletedUser.hashed_password = undefined
+      deletedUser.salt = undefined
+      res.json(deletedUser)
+    } catch (err) {
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+  }
+  
+  const photo = (req, res, next) => {
+    // if(req.profile.photo.data){
+    //   res.set("Content-Type", req.profile.photo.contentType)
+    //   return res.send(req.profile.photo.data)
+    // }
+    return res.sendFile(process.cwd()+'../../client/src/assets/profile-pic.png')
+    // next()
+    // return res.status(200)
+  }
+  
+const defaultPhoto = (req, res) => {
+    // return res.status(200)
+    return res.sendFile(process.cwd()+'../../client/src/assets/profile-pic.png')
+  }
+  
+  const addFollowing = async (req, res, next) => {
+    try{
+      await User.findByIdAndUpdate(req.body.userId, {$push: {following: req.body.followId}}) 
+      next()
+    }catch(err){
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+  }
+  
+  const addFollower = async (req, res) => {
+    try{
+      let result = await User.findByIdAndUpdate(req.body.followId, {$push: {followers: req.body.userId}}, {new: true})
+                              .populate('following', '_id name')
+                              .populate('followers', '_id name')
+                              .exec()
+        result.hashed_password = undefined
+        result.salt = undefined
+        res.json(result)
+      }catch(err) {
+        return res.status(400).json({
+          error: errorHandler.getErrorMessage(err)
+        })
+      }  
+  }
+  
+  const removeFollowing = async (req, res, next) => {
+    try{
+      await User.findByIdAndUpdate(req.body.userId, {$pull: {following: req.body.unfollowId}}) 
+      next()
+    }catch(err) {
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+  }
+  const removeFollower = async (req, res) => {
+    try{
+      let result = await User.findByIdAndUpdate(req.body.unfollowId, {$pull: {followers: req.body.userId}}, {new: true})
+                              .populate('following', '_id name')
+                              .populate('followers', '_id name')
+                              .exec() 
+      result.hashed_password = undefined
+      result.salt = undefined
+      res.json(result)
+    }catch(err){
+        return res.status(400).json({
+          error: errorHandler.getErrorMessage(err)
+        })
+    }
+  }
+  
+  const findPeople = async (req, res) => {
+    let following = req.profile.following
+    following.push(req.profile._id)
+    try {
+      let users = await User.find({ _id: { $nin : following } }).select('name')
+      res.json(users)
+    }catch(err){
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+  }
+  
+  export {
+    create,
+    userByID,
+    read,
+    list,
+    remove,
+    update,
+    photo,
+    defaultPhoto,
+    addFollowing,
+    addFollower,
+    removeFollowing,
+    removeFollower,
+    findPeople
+  }
+  'use strict'
+
+/**
+ * Get unique error field name
+ */
+const getUniqueErrorMessage = (err) => {
+    let output
+    try {
+        let fieldName = err.message.substring(err.message.lastIndexOf('.$') + 2, err.message.lastIndexOf('_1'))
+        output = fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ' already exists'
+    } catch (ex) {
+        output = 'Unique field already exists'
+    }
+
+    return output
+}
+
+/**
+ * Get the error message from error object
+ */
+const getErrorMessage = (err) => {
+    let message = ''
+
+    if (err.code) {
+        switch (err.code) {
+            case 11000:
+            case 11001:
+                message = getUniqueErrorMessage(err)
+                break
+            default:
+                message = 'Something went wrong'
+        }
+    } else {
+        for (let errName in err.errors) {
+            if (err.errors[errName].message) message = err.errors[errName].message
+        }
+    }
+
+    return message
+}
+
+export default {getErrorMessage}
+import jwt from 'jsonwebtoken'
+
+const auth = (req, res, next) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+
+        let decodeData = jwt.verify(token,process.env.JWT_SECRET)
+        req.userId = decodeData?.id
+        next()
+    } catch (error) {
+        
+    }
+}
+
+export default auth
+import mongoose from 'mongoose'
+import crypto from 'crypto'
+const UserSchema = mongoose.Schema({
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    hashed_password: { type: String, required: true },
+    about: { type: String, default: '' },
+    tags: { type: [String] },
+    joinedOn: { type: Date, default: Date.now },
+    planOpted: { type: String, default: 'Free', required: true },
+    planOptedOn: { type: Date },
+    noOfQuestions:  {type: Number, default:1, required:true},
+    salt: String,
+    updated: Date,
+    created: {
+      type: Date,
+      default: Date.now
+    },
+    about: {
+      type: String,
+      trim: true
+    },
+    photo: {
+      data: Buffer,
+      contentType: String
+    },
+    following: [{type: mongoose.Schema.ObjectId, ref: 'User'}],
+    followers: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
+    reputations: {type:Number,default:0},
+  })
+  
+  UserSchema
+    .virtual('password')
+    .set(function (password) {
+      this._password = password
+      this.salt = this.makeSalt()
+      this.hashed_password = this.encryptPassword(password)
+      // console.log(hashed_password);
+    })
+    .get(function() {
+      return this._password
+    })
+  
+  UserSchema.path('hashed_password').validate(function(v) {
+    if (this._password && this._password.length < 6) {
+      this.invalidate('password', 'Password must be at least 6 characters.')
+    }
+    if (this.isNew && !this._password) {
+      this.invalidate('password', 'Password is required')
+    }
+  }, null)
+  
+  UserSchema.methods = {
+    authenticate: function(plainText) {
+      return this.encryptPassword(plainText) === this.hashed_password
+    },
+    encryptPassword: function(password) {
+      if (!password) return ''
+      try {
+        return crypto
+          .createHmac('sha1', this.salt)
+          .update(password)
+          .digest('hex')
+      } catch (err) {
+        return ''
+      }
+    },
+    makeSalt: function() {
+      return Math.round((new Date().valueOf() * Math.random())) + ''
+    }
+  }
+  
+
+export default mongoose.model('User', UserSchema)
+import mongoose from 'mongoose'
+
+const OTPSchema = mongoose.Schema({
+    email: { type: String, required: true },
+    otp: { type: String, required: true },
+    expiresIn: { type: Date, required:true }
+})
+
+export default mongoose.model('OTP', OTPSchema) 
+import mongoose from 'mongoose'
+const PostSchema = new mongoose.Schema({
+  text: {
+    type: String,
+    required: 'Text is required'
+  },
+  photo: {
+    data: Buffer,
+    contentType: String
+  },
+  likes: [{type: mongoose.Schema.ObjectId, ref: 'User'}],
+  comments: [{
+    text: String,
+    created: { type: Date, default: Date.now },
+    postedBy: { type: mongoose.Schema.ObjectId, ref: 'User'}
+  }],
+  postedBy: {type: mongoose.Schema.ObjectId, ref: 'User'},
+  created: {
+    type: Date,
+    default: Date.now
+  }
+})
+
+export default mongoose.model('Post', PostSchema)
+import mongoose from 'mongoose'
+
+const QuestionSchema = mongoose.Schema({
+    questionTitle: { type: String, required: "Question must've a title" },
+    questionBody: { type: String, required: "Question must've a Body" },
+    questionTags: { type: [String], required: "Question must've a tags" },
+    noOfAnswers: { type: Number, default:0 },
+    upVote: { type: [String] ,default:[]},
+    downVote: { type: [String] ,default:[]},
+    userPosted: { type: String, required: "Question must've an author" },
+    userId: { type: String },
+    askedOn: { type: Date, default: Date.now },
+    answer: [{
+        answerBody: String,
+        userAnswered: String,
+        userId: String,
+        asnweredOn: { type: Date, default: Date.now },
+        replies: [{userId: String, userAnswered: String, reply:String}]
+    }]
+
+})
+
+export default mongoose.model('Question', QuestionSchema)
+import express from 'express'
+
+import {postAnswer,deleteAnswer,addReply} from '../controllers/Answers.js'
+import auth from '../middlewares/auth.js'
+const router = express.Router()
+
+router.patch('/post/:id', auth,postAnswer)
+router.patch('/delete/:id', auth,deleteAnswer)
+router.patch('/reply/:id', auth,addReply)
+
+export default router
+import express from 'express'
+import Stripe from 'stripe'
+import { addPlan } from '../utilities/addPlan'
+
+const router = express.Router()
+
+const storeItems = {
+	'Silver': 100,
+	'Gold': 1000
+}
+
+router.post("/purchasePlan", async (req, res) => {
+	try {
+		const stripe = new Stripe(process.env.STRIPE_PVT_KEY)
+		const plan = req.body.plan
+		const id = req.body.id
+		let flag = 0
+		if (plan === 'Silver') {
+			flag = 1
+		} else if(plan === 'Gold') {
+			flag = 2
+		}
+		const amount = storeItems[plan]
+		const paymentIntent = await stripe.paymentIntents.create({
+			amount: (amount+ 0.0365*amount)*100,
+			currency: "inr",
+			automatic_payment_methods: {
+			  enabled: true,
+			},
+		});
+		
+		res.send({
+			clientSecret: paymentIntent.client_secret,
+		});
+		return addPlan(id,plan)
+		// return res.status(200).json({ id: session.id, plan:req.body.plan })
+	} catch (e) {
+		console.log('serv routes payment purchase plan',e.message);
+		return res.status(500).json({ error: e.message })
+	}
+})
+
+export default router
+
+
+
+// const router = require("express").Router();
+// const Razorpay = require("razorpay");
+// const crypto = require("crypto");
+
+// router.post("/orders", async (req, res) => {
+// 	try {
+// 		const instance = new Razorpay({
+// 			key_id: process.env.KEY_ID,
+// 			key_secret: process.env.KEY_SECRET,
+// 		});
+
+// 		const options = {
+// 			amount: req.body.amount,
+// 			currency: "INR",
+// 			receipt: crypto.randomBytes(10).toString("hex"),
+// 		};
+
+// 		instance.orders.create(options, (error, order) => {
+// 			if (error) {
+// 				console.log(error);
+// 				return res.status(500).json({ message: "Something Went Wrong!" });
+// 			}
+// 			res.status(200).json({ data: order });
+// 		});
+// 	} catch (error) {
+// 		res.status(500).json({ message: "Internal Server Error!" });
+// 		console.log(error);
+// 	}
+// });
+
+// router.post("/verify", async (req, res) => {
+// 	try {
+// 		const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+// 			req.body;
+// 		const sign = razorpay_order_id + "|" + razorpay_payment_id;
+// 		const expectedSign = crypto
+// 			.createHmac("sha256", process.env.KEY_SECRET)
+// 			.update(sign.toString())
+// 			.digest("hex");
+
+// 		if (razorpay_signature === expectedSign) {
+// 			return res.status(200).json({ message: "Payment verified successfully" });
+// 		} else {
+// 			return res.status(400).json({ message: "Invalid signature sent!" });
+// 		}
+// 	} catch (error) {
+// 		res.status(500).json({ message: "Internal Server Error!" });
+// 		console.log(error);
+// 	}
+// });
+
+// module.exports = router;
+import express from 'express'
+import getCurrentPlan from '../utilities/getCurrentPlan'
+import getNoOfQuestions from '../utilities/getNoOfQuestions'
+
+const router = express.Router()
+
+router.post('/getCurrentPlan',getCurrentPlan)
+router.post('/getNoOfQuestions',getNoOfQuestions)
+
+export default router
+import express from 'express'
+import {requireSignin} from '../controllers/auth'
+import {userByID} from '../controllers/users'
+import postCtrl from '../controllers/post'
+
+const router = express.Router()
+
+router.route('/new/:userId')
+  .post(requireSignin, postCtrl.create)
+
+router.route('/photo/:postId')
+  .get(postCtrl.photo)
+
+router.route('/by/:userId')
+  .get(requireSignin, postCtrl.listByUser)
+
+router.route('/feed/:userId')
+  .get(requireSignin, postCtrl.listNewsFeed)
+
+router.route('/like')
+  .put(requireSignin, postCtrl.like)
+router.route('/unlike')
+  .put(requireSignin, postCtrl.unlike)
+
+router.route('/comment')
+  .put(requireSignin, postCtrl.comment)
+router.route('/uncomment')
+  .put(requireSignin, postCtrl.uncomment)
+
+router.route('/:postId')
+  .delete(requireSignin, postCtrl.isPoster, postCtrl.remove)
+
+router.param('userId', userByID)
+router.param('postId', postCtrl.postByID)
+
+export default router
+import express from 'express'
+import { AskQuestion,getAllQuestions,deleteQuestion,voteQuestion } from '../controllers/Questions'
+import auth from '../middlewares/auth'
+
+const router = express.Router()
+
+router.post('/Ask', auth,AskQuestion)
+router.get('/get', getAllQuestions)
+router.delete('/delete/:id',auth,deleteQuestion)
+router.patch('/vote/:id',auth,voteQuestion)
+export default router
+import express from 'express'
+import searchStackOverflow from '../controllers/searchStackOverflow'
+
+const router = express.Router()
+
+router.post('/stackoverflow',searchStackOverflow)
+
+export default router
+import express from 'express'
+import {
+    login,
+    signup,
+    signout,
+    requireSignin,
+    hasAuthorization} from '../controllers/auth'
+import {
+    getAllUsers,
+    updateProfile,
+    create,
+    userByID,
+    read,
+    list,
+    remove,
+    update,
+    photo,
+    defaultPhoto,
+    addFollowing,
+    addFollower,
+    removeFollowing,
+    removeFollower,
+    findPeople} from '../controllers/users'
+import auth from '../middlewares/auth'
+
+const router = express.Router()
+
+router.post('/signup', signup)
+router.post('/login', login)
+router.get('/signout',signout)
+router.get('/getAllUsers', getAllUsers)
+router.patch('/update/:id', auth, updateProfile)
+
+router.route('/create')
+  .get(list)
+  .post(create)
+
+router.route('/photo/:userId')
+  .get(photo, defaultPhoto)
+router.route('/defaultphoto')
+  .get(defaultPhoto)
+
+router.route('/follow')
+    .put(requireSignin, addFollowing, addFollower)
+router.route('/unfollow')
+    .put(requireSignin, removeFollowing, removeFollower)
+
+router.route('/findpeople/:userId')
+   .get(requireSignin, findPeople)
+
+router.route('/:userId')
+  .get(requireSignin, read)
+  .put(requireSignin, hasAuthorization, update)
+  .delete(requireSignin, hasAuthorization, remove)
+
+router.param('userId', userByID)
+
+export default router
+import express from 'express'
+import { generateOTP, verifyOTP } from '../controllers/generateOTP'
+
+const router = express.Router()
+
+router.post('/email', generateOTP)
+router.post('/otp', verifyOTP)
+
+export default router
+import User from '../models/auth'
+
+export const addPlan = async (id, plan) => {
+    try {
+        var noOfQuestions = 1
+        if (plan === 'Silver') {
+            noOfQuestions = 5
+        } else if(plan === 'Gold') {
+            noOfQuestions = Infinity
+        }
+        await User.findByIdAndUpdate(id, { planOpted: plan, planOptedOn: Date.now(), noOfQuestions: noOfQuestions })
+        return 
+        
+    } catch (error) {
+        console.log('serv utils addPlan addPlan', error);
+        return 
+    }
+}
+import User from '../models/auth'
+import express from 'express'
+
+const router = express.Router()
+
+router.post('/', async (req, res) => {
+    console.log('i');
+    try {
+        const plan = await User.findById(req.body.id).planOpted
+        console.log(plan);
+        return res.status(200).json({plan: plan})
+    } catch (error) {
+        console.log('serv utils getCurrentPlan ', error);
+        return res.status(500).json({error})
+    }
+})
+
+export default router
+import User from '../models/auth'
+import express from 'express'
+
+const router = express.Router()
+
+router.post('/', async (req, res) => {
+    try {
+        const noOfQuestions = await User.findById(req.body.id).noOfQuestions
+        console.log(noOfQuestions);
+        return res.status(200).json({noOfQuestions: noOfQuestions})
+    } catch (error) {
+        console.log('serv utils getCurrentPlan ', error);
+        return res.status(500).json({error})
+    }
+})
+
+export default router
+import nodemailer from 'nodemailer'
+
+async function Mailer (otp) {
+    let mailTransporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: '9698939924naveen@gmail.com',
+            pass: 'xukvaxvgcxieywut'
+        }
+    });
+    let mailDetails = {
+        from: '9698939924naveen@gmail.com',
+        to: otp.email,
+        subject: 'OTP For Authentication Stackoverflow Chatbot',
+        text: JSON.stringify(otp.otp)
+    };
+    
+    mailTransporter.sendMail(mailDetails, async function (err, data) {
+        if (err) {
+            console.log('Error Occurs', err);
+            return false;
+        } else {
+            console.log('Email sent successfully');
+            return true;
+        }
+    });
+}
+
+
+export default Mailer;
+import { exec }  from 'child_process'
+exec("stack;xdotool key esc", (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    console.log(`stdout: ${stdout}`);
+});
+import User from '../models/auth'
+
+export default async function updatePlans() {
+    try {
+        const msPerDay = 24 * 60 * 60 * 1000
+        const Users = await User.find({})
+        for (let index = 0; index < Users.length; index++) {
+            const user = Users[index];
+            if (user.planOpted === 'Silver') {
+                const daysLeft = (new Date().getTime() - new Date(user.planOptedOn).getTime()) / msPerDay
+                if (daysLeft >= 30) {
+                    await User.findByIdAndUpdate(user._id, { planOpted: 'Free',noOfQuestions: 1 })
+                }
+                if (user.noOfQuestions === 5) {
+                    continue;
+                } else {
+                    return await User.findByIdAndUpdate(user._id, { noOfQuestions: 5 })
+                }
+            } else if (user.planOpted === 'Free') {
+                if (user.noOfQuestions === 1) {
+                    continue;
+                } else {
+                    return await User.findByIdAndUpdate(user._id, { noOfQuestions: 1 })
+                }
+            } else if (user.planOpted === 'Gold') {
+                const daysLeft = (new Date().getTime() - new Date(user.planOptedOn).getTime()) / msPerDay
+                if (daysLeft >= 365) {
+                    await User.findByIdAndUpdate(user._id, { planOpted: 'Free',noOfQuestions: 1 })
+                }
+            }
+        }
+    } catch (error) {
+        console.log('serv utils updatePlans updatePlans', error);
+        return res.status(500).json({error})
+    }
+}
+import express from 'express'
+import mongoose from 'mongoose'
+import cors from 'cors'
+import userRoutes from './routes/users'
+import questionRoutes from './routes/Questions'
+import answerRoutes from './routes/Answers'
+import dotenv from 'dotenv'
+import verification from './routes/verification'
+import searchStackOverflow from './routes/searchStackOverflow'
+import paymentRoutes from './routes/payment'
+import cron from 'node-cron'
+import helmet from 'helmet'
+import updatePlans from './utilities/updatePlans'
+import plans from './routes/Plans'
+import postRoutes from './routes/post.routes'
+import config from './config/config'
+
+const app = express()
+
+dotenv.config()
+app.use(express.json({limit:'30mb',extended:true}))
+app.use(express.urlencoded({ limit: '30mb', extended: true }))
+app.use(cors())
+app.use(helmet({
+    crossOriginResourcePolicy: false,
+  }));
+
+mongoose.set('strictQuery', true)
+app.get('/', (req, res) => {
+    res.json("This is a stack overflow clone api")
+    console.log('server fired up at port', PORT);
+    console.log(req.protocol + '://' + req.get('host') + req.originalUrl)
+})
+
+app.use('/users',userRoutes)
+app.use('/questions', questionRoutes)
+app.use('/answer',answerRoutes)
+app.use('/verify',verification)
+app.use('/search',searchStackOverflow)
+app.use('/payment', paymentRoutes);
+app.use('/plans', plans)
+app.use('/posts',postRoutes)
+ 
+const PORT = process.env.PORT || 5000
+
+cron.schedule('* 38 0 * * *', () => {
+    console.log('Updating Plans', Date.now());
+    updatePlans()
+});
+const DATABASE_URL = process.env.CONNECTION_URL || config.mongoUri
+mongoose.connect(DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => app.listen(PORT, () => { console.log(`Server fired up on ${PORT} ${process.env.CONNECTION_URL|| config.mongoUri }`) }))
+    .catch(err => console.log(err.message))export default ({markup, css}) => {
+      return `<!doctype html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta
+              name="viewport"
+              content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
+            >
+            <title>MERN Social</title>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400">
+            <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+            <style>
+                a{
+                  text-decoration: none
+                }
+            </style>
+          </head>
+          <body style="margin:0">
+            <div id="root">${markup}</div>
+            <style id="jss-server-side">${css}</style>
+            <script type="text/javascript" src="/dist/bundle.js"></script>
+          </body>
+        </html>`
+  }
+  
