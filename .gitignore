@@ -4,3 +4,4 @@ server/node_modules
 server/.gitignore
 client/.env
 client/.env
+client/.env
