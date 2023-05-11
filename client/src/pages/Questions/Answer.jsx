@@ -15,6 +15,7 @@ const Answer = ({ ans, question }) => {
     const { id } = useParams()
     const User = useSelector((state) => (state.currentUserReducer))
     // const navigate = useNavigate()
+    console.log(ans);
     const dispatch = useDispatch()
     const location = useLocation()
     const url = process.env.REACT_APP_FRONT_END
@@ -53,7 +54,7 @@ const Answer = ({ ans, question }) => {
                 </div>
                 <div>
                     <p>Answered {moment(ans.answeredOn).fromNow()}</p>
-                    <Link to={`/Users/${question.userId}`} className='user-link' style={{ color: '#00086d8' }}>
+                    <Link to={`/Users/${ans.userId}`} className='user-link' style={{ color: '#00086d8' }}>
                         <Avatar backgroundColor="green" px="8px" py="5px">{ans.userAnswered.charAt(0).toUpperCase()}</Avatar>
                         <div>{ans.userAnswered}</div>
                     </Link>

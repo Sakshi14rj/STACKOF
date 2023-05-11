@@ -22,14 +22,14 @@ const predictSentiment  = async(text) =>{
 }
 export const updateReputations = async (userId, reply) => {
     const user = await User.findById(userId);
-    // console.log('updateReputations');
+    console.log('updateReputations');
     const pred = await predictSentiment(reply);
-    // console.log(pred);
+    console.log(pred);
     if (pred > 0.6)
         await User.findByIdAndUpdate(userId, { $inc: { reputations: 5 } });
     else {
         await User.findByIdAndUpdate(userId,{ $inc: { reputations :-1 } })
     }
-    // console.log('after update');
+    console.log('after update');
     return
 }
