@@ -27,7 +27,7 @@ app.use(helmet({
 
 mongoose.set('strictQuery', true)
 app.get('/', (req, res) => {
-    res.json("This is a stack overflow clone api")
+    res.status(200).send("This is a stack overflow clone api")
     console.log('server fired up at port', PORT);
     console.log(req.protocol + '://' + req.get('host') + req.originalUrl)
 })
