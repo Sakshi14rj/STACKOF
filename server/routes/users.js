@@ -23,7 +23,8 @@ import {
     findPeople} from '../controllers/users'
 import auth from '../middlewares/auth'
 
-const router = express.Router()
+const usersRouter = require('../routes/users');
+//const router = express.Router()
 
 router.post('/signup', signup)
 router.post('/login', login)
@@ -55,4 +56,4 @@ router.route('/:userId')
 
 router.param('userId', userByID)
 
-export default router
+export default usersRouter

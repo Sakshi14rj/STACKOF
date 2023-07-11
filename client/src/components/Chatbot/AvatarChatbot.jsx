@@ -12,7 +12,7 @@ const AvatarChatbot = props => {
                 ...styles.avatarHello,
                 ...{opacity: hovered ? '1':'0'}
               }}  
-          >Hey I am Namachu!
+          >Hey I am Doddles!
           </div>
           <div
             className='transition-3'
